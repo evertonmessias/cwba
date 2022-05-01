@@ -414,6 +414,14 @@
     width: 30em !important;
 }
 
+.portfolio-details .ementa{
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 30em;
+    border: 1px solid #ccc;
+}
+
 .button-pdf {
     display: block;
     position: relative;
@@ -485,6 +493,10 @@
 
     .portfolio img, .portfolio-details img {
         width: 100% !important;
+    }
+
+    .portfolio-details .ementa{
+        width: 100%;
     }
 
     .col-cursos2 {
