@@ -1,6 +1,7 @@
 <?php
 
 // PDF do Curso **********************************
+/*
 
 function field_box_curso_video()
 {
@@ -33,3 +34,4 @@ function save_productmeta_product($post_id)
     }
 }
 add_action('save_post', 'save_productmeta_product');
+*/

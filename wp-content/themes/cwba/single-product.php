@@ -23,14 +23,12 @@
         <div class="container">
 
             <div class="portfolio-details-container">
-                <div class="owl-carousel portfolio-details-carousel">
                     <?php
                     $wc_product = new WC_product(get_the_ID());
                     $array_images = $wc_product->get_gallery_image_ids();
                     foreach ($array_images as $image) { ?>
                         <img src="<?php echo wp_get_attachment_url($image); ?>" class="img-fluid img-produtos" title="<?php the_title() ?>">
                     <?php } ?>
-                </div>
             </div>
             <br><br>
             <div class="portfolio-description text-justify">
@@ -39,11 +37,10 @@
                 <?php if (is_user_logged_in()) { ?>
                     <?php if (current_user_can('administrator') || current_user_can('editor') || customer_orders(wp_get_current_user()->ID,get_the_ID()) == 2) { ?>
                         <br><hr><br>
-                        <!-- inicio conteúdo protegido -->
-                        <a href="<?php echo get_post_meta(get_the_ID(), 'curso_video_1', true); ?>" class="venobox btn-watch-video" data-vbtype="video" data-autoplay="true"><h3><i class="icofont-play-alt-2"></i>&emsp;<?php echo get_the_title(); ?></h3></a>
-                        <br><br>
+
+                        <!-- conteúdo protegido -->
                         <?php echo get_the_content(); ?>
-                        <!-- fim conteúdo protegido -->
+                        <!-- conteúdo protegido -->
                     
                     <?php } elseif(customer_orders(wp_get_current_user()->ID,get_the_ID()) == 1) { ?>
                         <br><br>

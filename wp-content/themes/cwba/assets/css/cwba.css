@@ -365,7 +365,7 @@
     display: block;
     position: relative;    
     margin: 0 auto;
-    width: 30em;
+    width: 40em;
     font-size: 20px;
     text-align: center;
     color: #0073AA;
@@ -379,6 +379,12 @@
 .post .btn-watch-video:hover h3 {
     color: #fff;
     background: #0073AA;
+}
+
+@media (max-width: 900px) {
+    .post .btn-watch-video h3 {
+        width: 100%;
+    }
 }
 
 
@@ -402,6 +408,8 @@
 }
 
 .portfolio img, .portfolio-details img {
+    display: block;
+    position: relative;
     margin: 0 auto !important;
     width: 30em !important;
 }
@@ -473,6 +481,10 @@
     .portfolio .portfolio-item {
         padding-top: 20px;
         padding-bottom: 20px;
+    }
+
+    .portfolio img, .portfolio-details img {
+        width: 100% !important;
     }
 
     .col-cursos2 {
