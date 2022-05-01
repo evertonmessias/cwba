@@ -1,0 +1,49 @@
+{
+    "name": "wpdesk\/wp-wpdesk-deactivation-modal",
+    "authors": [
+        {
+            "name": "Mateusz Gbiorczyk",
+            "email": "mateusz.gbiorczyk@wpdesk.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "FcfVendor\\WPDesk\\DeactivationModal\\": "src"
+        }
+    },
+    "prefer-stable": true,
+    "extra": {
+        "text-domain": "wp-wpdesk-deactivation-modal",
+        "translations-folder": "lang",
+        "po-files": {
+            "pl_PL": "pl_PL.po"
+        },
+        "assets-values": {
+            "plugin-slug": {
+                "search": "{__PLUGIN_SLUG__}",
+                "replace": "<?php echo $plugin_slug; ?>"
+            }
+        }
+    },
+    "require-dev": {
+        "phpunit\/phpunit": "<7",
+        "10up\/wp_mock": "*",
+        "wpdesk\/wp-code-sniffer": "^1.2"
+    },
+    "scripts": {
+        "build": "npm install && npm run prod",
+        "phpcs": "phpcs",
+        "phpunit-unit": "phpunit --configuration phpunit-unit.xml --coverage-text --colors=never",
+        "phpunit-unit-fast": "phpunit --configuration phpunit-unit.xml --no-coverage",
+        "post-install-cmd": [
+            "echo #!\/bin\/sh > .git\/hooks\/pre-commit",
+            "echo:>> .git\/hooks\/pre-commit",
+            "echo echo \"Building assets...\" >> .git\/hooks\/pre-commit",
+            "echo composer run build >> .git\/hooks\/pre-commit",
+            "echo git add assets\/ >> .git\/hooks\/pre-commit"
+        ]
+    },
+    "require": {
+        "wpdesk\/wp-wpdesk-tracker": "^2.3"
+    }
+}

@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.mp-alert-checkout-test-mode {
+	margin-bottom: 16px;
+	display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 94px;
+    padding-bottom: 10px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    border-left: 5px solid #f73;
+}
+
+.mp-alert-icon-checkout-test-mode {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	width: 10%;
+	height: 100%;
+	min-width: 30px;
+}
+
+.mp-alert-circle-img {
+	width: 16px;
+	margin-top: 16px;
+}
+
+.mp-alert-texts-checkout-test-mode {
+	flex: 1;
+	height: 100%;
+}
+
+.mp-alert-title-checkout-test-mode {
+	margin: 16px 0 0 0;
+	color: rgba(0, 0, 0, 0.9);
+	font-family: sans-serif;
+	font-weight: 500;
+	font-size: 16px;
+}
+
+.mp-alert-description-checkout-test-mode {
+	width: 90%;
+	margin: 4px 0 0 0 !important;
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.7);
+}

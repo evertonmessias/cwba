@@ -1,0 +1,88 @@
+.settings-cwba, .about-cwba{
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 99%;
+    min-height: 500px;
+    border: 1px solid #888;
+    margin-top: 15px;
+    margin-left: -5px;
+    padding: 20px;
+}
+.settings-cwba .title, .about-cwba .title{
+    color: #f00;
+    
+}
+
+#curso_video_id input{
+    width: 100%;
+}
+
+.settings-cwba hr, .about-cwba hr{
+    background-color: #bbb !important;
+    border: 1px solid #bbb !important;
+}
+.settings-cwba table, table.curso{
+    width: 65em;
+    border-spacing: 0;
+}
+
+.settings-cwba .wp-editor-wrap{
+    width: 150%;
+}
+
+.settings-cwba table img{
+    height: 100%;   
+}
+
+.settings-cwba input[type=number]{
+    width: 7em;
+    font-weight: 400;
+}
+.settings-cwba input[type=email],.settings-cwba input[type=text]{
+    width: 40em;
+    font-weight: 400;
+}
+.settings-cwba textarea{
+    width: 100%;
+    font-weight: 400;
+    margin-bottom: -3px;
+}
+
+.settings-cwba table td:nth-child(1),
+.settings-cwba table td:nth-child(3),
+table.curso td:nth-child(1),
+table.curso td:nth-child(3){
+    width: 4em;
+}
+
+.settings-cwba table td:nth-child(1) div{
+    text-align: center !important;
+    font-weight: 600;
+}
+.settings-cwba table td:nth-child(2){
+    width: 40em;   
+}
+
+table.curso td:nth-child(2){
+    width: 45em;   
+}
+
+.settings-cwba table td:nth-child(2) input,
+table.curso td:nth-child(2) input{
+    width: 100%;
+}
+
+#heateor_sss_meta{
+    display: none;
+}
+
+.meta-box-sortables input.postmeta-cursos,.meta-box-sortables input.postmeta-post{
+    width: 100%;
+}
+.woocommerce-layout,
+.woocommerce-layout span,
+.woocommerce-layout a,
+.woocommerce-layout td{
+    font-size: 14px !important;
+}
