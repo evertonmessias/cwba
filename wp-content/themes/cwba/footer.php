@@ -45,7 +45,8 @@
   			<strong><span><a href="/wp-admin/"><?php echo get_option('home_input_0'); ?></a></span></strong>
   		</div>
   		<div class="credits">
-  			Designed by <a target="_blank" href="https://portfolio.evertonm.com/">EvM</a>
+  			Designed by <a target="_blank" href="https://portfolio.evertonm.com/">EvM</a><br>
+			<small>Visitas: <?php access_counter(); ?></small>
   		</div>
   	</div>
   </footer><!-- End Footer -->

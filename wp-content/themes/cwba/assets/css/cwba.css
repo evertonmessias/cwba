@@ -12,7 +12,10 @@
     ;
 }
 
-#header, #topbar, .navbar a, .navbar a:focus {
+#header,
+#topbar,
+.navbar a,
+.navbar a:focus {
     font-family: Milliard !important;
 }
 
@@ -168,11 +171,13 @@
     top: -65px;
 }
 
-#header .logo span:hover, #header .logo small:hover {
+#header .logo span:hover,
+#header .logo small:hover {
     color: #aaa;
 }
 
-.navbar a, .navbar a:focus {
+.navbar a,
+.navbar a:focus {
     font-size: 15px;
     text-transform: none;
 }
@@ -363,7 +368,7 @@
 
 .post .btn-watch-video h3 {
     display: block;
-    position: relative;    
+    position: relative;
     margin: 0 auto;
     width: 40em;
     font-size: 20px;
@@ -407,19 +412,44 @@
     border: 1px solid #ccc;
 }
 
-.portfolio img, .portfolio-details img {
+.portfolio img,
+.portfolio-details img {
     display: block;
     position: relative;
     margin: 0 auto !important;
     width: 30em !important;
 }
 
-.portfolio-details .ementa{
+.portfolio-details .ementa {
     display: block;
     position: relative;
     margin: 0 auto;
     width: 30em;
     border: 1px solid #ccc;
+    padding: 10px 10px 20px 40px;
+}
+
+.portfolio-details .ementa h5 {
+    text-align: center;
+}
+
+.portfolio-details .ementa ul {
+    margin: 0.75em 0;
+    padding: 0 1em;
+    list-style: none;
+}
+
+.portfolio-details .ementa ul li::before {
+    content: "";
+    border-color: transparent #111;
+    border-style: solid;
+    border-width: 0.35em 0 0.35em 0.45em;
+    display: block;
+    height: 0;
+    width: 0;
+    left: -1em;
+    top: 1em;
+    position: relative;
 }
 
 .button-pdf {
@@ -463,7 +493,8 @@
     display: none;
 }
 
-.woocommerce .col-1, .woocommerce .col-2 {
+.woocommerce .col-1,
+.woocommerce .col-2 {
     max-width: 48% !important;
 }
 
@@ -491,11 +522,12 @@
         padding-bottom: 20px;
     }
 
-    .portfolio img, .portfolio-details img {
+    .portfolio img,
+    .portfolio-details img {
         width: 100% !important;
     }
 
-    .portfolio-details .ementa{
+    .portfolio-details .ementa {
         width: 100%;
     }
 
@@ -503,7 +535,8 @@
         float: none;
     }
 
-    .woocommerce .col-1, .woocommerce .col-2 {
+    .woocommerce .col-1,
+    .woocommerce .col-2 {
         max-width: 100% !important;
     }
 
