@@ -1,6 +1,10 @@
 <?php get_header(); ?>
 
-<?php registerdb($_SERVER['REMOTE_ADDR']);?>
+<?php
+if (!is_user_logged_in()) {
+	registerdb($_SERVER['REMOTE_ADDR']);
+}
+?>
 
 <!-- ======= Hero Section ======= -->
 <section id="hero">
