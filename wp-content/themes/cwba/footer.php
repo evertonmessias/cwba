@@ -13,7 +13,7 @@
   						</p>
   						<div class="social-links mt-3">
   							<a target="_blank" href="<?php echo get_option('home_input_16'); ?>" class="facebook"><i class="bx bxl-facebook"></i></a>
-  							<a target="_blank" href="<?php echo get_option('home_input_17'); ?>" class="instagram"><i class="bx bxl-instagram"></i></a>  							
+  							<a target="_blank" href="<?php echo get_option('home_input_17'); ?>" class="instagram"><i class="bx bxl-instagram"></i></a>
   						</div>
   					</div>
   				</div>
@@ -21,19 +21,19 @@
   				<div class="col-lg-4 col-md-6 footer-links">
   					<h4>Links</h4>
   					<ul>
-					  	<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/">Início</a></li>  						
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/">Início</a></li>
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#sobre">Sobre</a></li>
-  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>cursos">Cursos</a></li>  							
-						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#contact">Contato</a></li>
-						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/blog">Blog</a></li>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>cursos">Cursos</a></li>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#contact">Contato</a></li>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/blog">Blog</a></li>
   					</ul>
   				</div>
 
   				<div id="participe" class="col-lg-4 col-md-6 footer-newsletter">
-  					<h4>Fique por dentro.</h4>  					
+  					<h4>Fique por dentro.</h4>
   					<div class="php-email-form2">
-						<?php echo do_shortcode('[wpforms id="29"]'); ?>						
-					</div>
+  						<?php echo do_shortcode('[wpforms id="29"]'); ?>
+  					</div>
   				</div>
 
   			</div>
@@ -46,7 +46,13 @@
   		</div>
   		<div class="credits">
   			Designed by <a target="_blank" href="https://portfolio.evertonm.com/">EvM</a><br>
-			<small>Visitas: <?php access_counter(); ?></small>
+  			<small>Visitas:
+  				<?php
+					$last_ip = list_access('id');
+					$last_ip = end($last_ip);
+					echo $last_ip->id;					
+				?>
+  			</small>
   		</div>
   	</div>
   </footer><!-- End Footer -->

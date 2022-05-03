@@ -172,3 +172,27 @@ function remove_categories() {
 }
 add_action( 'init', 'remove_categories' );
 
+function registerdb($ip) // register in db
+{
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'access';
+	$resp = $wpdb->insert($table_name, array('ipadress' => $ip, 'time' => current_time('mysql')));
+	if ($resp == 1) {
+		return "register db: SUCESS";
+	} else {
+		return "register db: ERROR";
+	}
+}
+add_action('registerdb','registerdb');
+
+
+function list_access($item) // list access
+{
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'access';
+	$results = $wpdb->get_results(
+		"SELECT $item FROM $table_name"
+	);
+	return $results;
+}
+add_action('list_access','list_access');

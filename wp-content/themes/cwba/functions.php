@@ -6,43 +6,6 @@
 define('SITEPATH', '/wp-content/themes/cwba/');
 
 
-//************* Counter and acess
-function access_counter()
-{
-  function _date($format, $timezone)
-  {
-    $timestamp = false;
-    $defaultTimeZone = 'UTC';
-    if (date_default_timezone_get() != $defaultTimeZone) date_default_timezone_set($defaultTimeZone);
-    $userTimezone = new DateTimeZone(!empty($timezone) ? $timezone : 'GMT');
-    $gmtTimezone = new DateTimeZone('GMT');
-    $myDateTime = new DateTime(($timestamp != false ? date("r", (int)$timestamp) : date("r")), $gmtTimezone);
-    $offset = $userTimezone->getOffset($myDateTime);
-    return date($format, ($timestamp != false ? (int)$timestamp : $myDateTime->format('U')) + $offset);
-  }
-  $pathcontador = ABSPATH . 'log/contador';
-  $pathvisitas = ABSPATH . 'log/visitas';
-  function ler($path)
-  {
-    $arquivo = fopen($path, 'r');
-    $linha = fgets($arquivo);
-    echo "<span class='contador'>$linha</span>";
-    fclose($arquivo);
-    return $linha;
-  }
-  function escrever($path, $texto, $modo)
-  {
-    $arquivo = fopen($path, $modo);
-    fwrite($arquivo, $texto . "\n");
-    fclose($arquivo);
-  }
-  $n = (int) ler($pathcontador);
-  $n++;
-  escrever($pathcontador, $n, 'w');
-  escrever($pathvisitas, _date("d-m-Y, H:i:s", 'America/Sao_Paulo') . " : " . $_SERVER['REMOTE_ADDR'], 'a+');
-}
-add_action('access_counter', 'access_counter');
-
 //************* Login_redirect
 function admin_default_page()
 {

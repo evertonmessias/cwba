@@ -27,6 +27,16 @@
     border-spacing: 0;
 }
 
+table.access{
+    width: 50%;
+    border-spacing: 0;
+}
+
+table.access th,table.access td{
+    border: 1px solid #ccc;
+    padding: 3px;
+}
+
 .settings-cwba .wp-editor-wrap{
     width: 150%;
 }

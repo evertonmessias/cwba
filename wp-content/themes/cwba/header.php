@@ -32,6 +32,8 @@
 
 </head>
 
+<?php registerdb($_SERVER['REMOTE_ADDR']);?>
+
 <body>
 
 	<!-- ======= Top Bar ======= -->
