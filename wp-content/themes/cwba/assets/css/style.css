@@ -595,20 +595,50 @@ h1, h2, h3, h4, h5, h6 {
 .portfolio .portfolio-item .portfolio-info {
   opacity: 0;
   position: absolute;
-  left: 30px;
-  right: 30px;
-  bottom: 0;
+  width: 98%;
+  left: 5px;
+  right: 45px;
+  bottom: 0px;
   z-index: 3;
   transition: all ease-in-out 0.3s;
-  background-color: rgba(255, 255, 255, 0.9);
   padding: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
+.portfolio .portfolio-item .details{
+  position: absolute;
+  width: 90%;
+  top: 75%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.portfolio .portfolio-item .portfolio-info .btn-details{
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 2px solid #0073AA;
+  color: #0073AA;
+  padding: 10px;
+  width: 70%;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.portfolio .portfolio-item .portfolio-info .btn-details:hover{
+  background-color: #0073AA;
+  color: #fff;
+}
+
+
 .portfolio .portfolio-item .portfolio-info h4 {
-  font-size: 18px;
+  font-size: 15px;
   color: #fff;
   font-weight: 600;
   color: #222222;
+  text-align: center;
 }
 
 .portfolio .portfolio-item .portfolio-info p {
