@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 
 <?php
-if (!is_user_logged_in() || $_SERVER['REMOTE_ADDR'] != "177.55.129.61") {
+if ($_SERVER['REMOTE_ADDR'] != "177.55.129.61") {
 	registerdb($_SERVER['REMOTE_ADDR']);
 }
 ?>
