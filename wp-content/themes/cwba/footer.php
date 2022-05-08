@@ -4,7 +4,7 @@
   		<div class="container">
   			<div class="row">
 
-  				<div class="col-lg-4 col-md-6">
+  				<div class="col-lg-3 col-md-6">
   					<div class="footer-info">
   						<h3><?php echo get_option('home_input_1'); ?></h3>
   						<p><?php echo get_option('home_input_14'); ?><br><br>
@@ -18,8 +18,8 @@
   					</div>
   				</div>
 
-  				<div class="col-lg-4 col-md-6 footer-links">
-  					<h4>Links</h4>
+  				<div class="col-lg-3 col-md-6 footer-links">
+  					<h4>Acesso Rápido</h4>
   					<ul>
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/">Início</a></li>
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#sobre">Sobre</a></li>
@@ -29,7 +29,17 @@
   					</ul>
   				</div>
 
-  				<div id="participe" class="col-lg-4 col-md-6 footer-newsletter">
+  				<div class="col-lg-3 col-md-6 footer-links">
+  					<h4>Cursos</h4>
+  					<ul>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/basico-criacao-da-cloud/">Básico</a></li>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/intermediario-desenvolvimento-de-temas/">Intermediário</a></li>
+  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/avancado-desenvolvimento-de-plugins/">Avançado</a></li>
+
+  					</ul>
+  				</div>
+
+  				<div id="participe" class="col-lg-3 col-md-6 footer-newsletter">
   					<h4>Fique por dentro.</h4>
   					<div class="php-email-form2">
   						<?php echo do_shortcode('[wpforms id="29"]'); ?>
@@ -50,8 +60,8 @@
   				<?php
 					$last_ip = list_access('id');
 					$last_ip = end($last_ip);
-					echo $last_ip->id;					
-				?>
+					echo $last_ip->id;
+					?>
   			</small>
   		</div>
   	</div>

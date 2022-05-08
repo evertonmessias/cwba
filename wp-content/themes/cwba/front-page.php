@@ -60,7 +60,7 @@ if (!is_user_logged_in()) {
 	<section id="sobre" class="about section-bg">
 		<div class="container" data-aos="fade-up">
 			<div class="section-title">
-				<h2>SOBRE</h2>
+				<h2>SOBRE O CURSO</h2>
 			</div>
 			<div class="row">
 				<div class="col-lg-6 align-items-stretch video-box" style='background-image: url("<?php echo get_option('home_input_6'); ?>");' data-aos="fade-right">
@@ -88,7 +88,7 @@ if (!is_user_logged_in()) {
 			?>
 
 			<div class="section-title">
-				<h2>CURSOS</h2>
+				<h2>PROGRAMAÇÃO WORDPRESS</h2>
 			</div>
 
 			<div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -220,7 +220,7 @@ if (!is_user_logged_in()) {
 	<section id="contact" class="contact">
 		<div class="container">
 			<div class="section-title">
-				<h2>Contato</h2>
+				<h2>CONTATO</h2>
 			</div>
 		</div>
 		<div class="container">

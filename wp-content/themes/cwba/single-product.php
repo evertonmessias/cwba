@@ -52,7 +52,7 @@
                             <p class="center msgOK">Ok, Seu curso está sendo preparado ...</p>
                             <br>
                         <?php } else { ?>
-                            <br><br>
+                            <br>
                             <hr>
                             <p class="center">Para ver o conteúdo clique botão abaixo:</p>
                             <br>
@@ -60,9 +60,9 @@
                             <a class='btn-pedido' href="/carrinho/?add-to-cart=<?php echo get_the_ID(); ?>&quantity=1">Quero Comprar</a>
                         <?php }
                     } else { ?>
-                        <br><br>
+                        <br>
                         <hr>
-                        <p class="center">Para ver o conteúdo clique em um dos botões abaixo:</p>
+                        <p class="center">Para ver o conteúdo completo clique em um dos botões abaixo:</p>
                         <br>
                         <?php echo "<h5 class='center'>Preço: R$ " . $wc_product->get_price() . "</h5>"; ?>
                         <a class='btn-pedido' href="/carrinho/?add-to-cart=<?php echo get_the_ID(); ?>&quantity=1">Quero Comprar</a>
