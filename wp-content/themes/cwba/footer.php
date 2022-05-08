@@ -35,7 +35,6 @@
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/basico-criacao-da-cloud/">Básico</a></li>
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/intermediario-desenvolvimento-de-temas/">Intermediário</a></li>
   						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/avancado-desenvolvimento-de-plugins/">Avançado</a></li>
-
   					</ul>
   				</div>
 
