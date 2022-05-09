@@ -387,6 +387,9 @@
 }
 
 @media (max-width: 900px) {
+    .post{
+        margin-top: 120px !important;
+    }
     .post .btn-watch-video h3 {
         width: 100%;
     }

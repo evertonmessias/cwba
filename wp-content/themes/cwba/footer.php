@@ -32,9 +32,19 @@
   				<div class="col-lg-3 col-md-6 footer-links">
   					<h4>Cursos</h4>
   					<ul>
-  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/basico-criacao-da-cloud/">Básico</a></li>
-  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/intermediario-desenvolvimento-de-temas/">Intermediário</a></li>
-  						<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="/produto/avancado-desenvolvimento-de-plugins/">Avançado</a></li>
+  						<?php
+							$args = array(
+								'post_type' => 'product',
+								'orderby'       => 'id',
+								'order'         => 'ASC',
+								'posts_per_page' => 10
+							);
+							$loop = new WP_Query($args);
+							while ($loop->have_posts()) {
+								$loop->the_post();								
+							?>
+  							<li><i class="bx bx-chevron-right"></i> <a class="nav-link scrollto" href="<?php the_permalink(); ?>"><?php echo get_the_title(); ?></a></li>
+  						<?php } ?>
   					</ul>
   				</div>
 
