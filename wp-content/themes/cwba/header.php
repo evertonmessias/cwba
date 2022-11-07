@@ -10,7 +10,10 @@
 	<meta content="" name="keywords">
 
 	<!-- Favicons -->
-	<link href="<?php echo get_option('home_input_2'); ?>" rel="icon">
+	<link href="<?php echo get_option('portal_input_1'); ?>" rel="icon">
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
 	<!-- Vendor CSS Files -->
 	<link href="<?php echo SITEPATH; ?>assets/vendor/animate.css/animate.min.css" rel="stylesheet">
@@ -21,51 +24,39 @@
 	<link href="<?php echo SITEPATH; ?>assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">	
 	<link href="<?php echo SITEPATH; ?>assets/vendor/icofont/icofont.min.css" rel="stylesheet">
 	<link href="<?php echo SITEPATH; ?>assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
+	<link href="<?php echo SITEPATH; ?>assets/vendor/remixicon/remixicon.css" rel="stylesheet">
 	<link href="<?php echo SITEPATH; ?>assets/vendor/venobox/venobox.css" rel="stylesheet">
 	<link href="<?php echo SITEPATH; ?>assets/vendor/aos/aos.css" rel="stylesheet">
 
 	<!-- Template Main CSS File -->
 	<link href="<?php echo SITEPATH; ?>assets/css/style.css" rel="stylesheet">
-	<link href="<?php echo SITEPATH; ?>assets/css/cwba.css" rel="stylesheet">
 
 	<?php wp_head(); ?>
 
 </head>
 
 <body>
-
-	<!-- ======= Top Bar ======= -->
-	<div id="topbar" class="d-none d-lg-flex align-items-center fixed-top <?php hide_admin_bar(); ?>">
-		<div class="container d-flex">
-			<div class="contact-info mr-auto">
-				<a target="_blank" href="mailto:<?php echo get_option('home_input_13'); ?>"><i class="icofont-envelope"></i>&nbsp;<?php echo get_option('home_input_13'); ?></a>&emsp;
-				<a target="_blank" href="https://api.whatsapp.com/send?phone=55<?php echo get_option('home_input_12'); ?>&text=cwba"><i class="bx bxl-whatsapp"></i>&nbsp;<?php echo get_option('home_input_12'); ?></a>
-			</div>			
-		</div>
-		<div id="topforms">
-				<div class="search-form"><?php echo get_search_form() ?></div>
-		</div>
-	</div>
-
 	<!-- ======= Header ======= -->
-	<header id="header" class="fixed-top <?php hide_admin_bar(); ?>">
+	<header id="header" class="fixed-top d-flex align-items-center <?php if (is_user_logged_in() && !current_user_can('aluno')) echo "user-logged"; ?> <?php if (!is_front_page()) echo "header-pages"; ?>">
 		<div class="container d-flex align-items-center">
-
-			<a href="/" class="logo me-auto"><img src="<?php echo get_option('home_input_2'); ?>" alt="">
-				&nbsp;
-				<span><?php echo get_option('home_input_0'); ?></span><br>
-				<small><?php echo get_option('home_input_1'); ?></small>				
+			<a href="/" class="logo me-auto <?php if (!is_front_page()) echo 'logo-silver'; ?>"><img src="<?php echo get_option('portal_input_1'); ?>" title="logo">
+			&ensp;<span><?php echo get_option('portal_input_0'); ?></span>
 			</a>
 
 			<nav id="navbar" class="navbar order-last order-lg-0">
-				<ul>					
-					<li><a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#sobre">Sobre</a></li>
-					<li><a class="nav-link scrollto" href="/<?php if (is_home() || is_page('cursos')) echo '#'; ?>cursos">Cursos</a></li>
-					<li><a class="nav-link scrollto" href="<?php if (!is_home()) echo '/'; ?>#contact">Contato</a></li>
+				<ul>
+					<li ><a class="nav-link scrollto <?php if (is_front_page()) echo 'active'; ?>" href="/#hero">Inicio</a></li>
+					<li><a class="nav-link scrollto" href="/#sobre">Sobre</a></li>
+					<li><a class="nav-link scrollto" href="/#contato">Contato</a></li>					
+					<li><a class="nav-link scrollto" href="/aulas">Aulas</a></li>
 				</ul>
-				<i class="bi bi-list mobile-nav-toggle"></i>				
+				<i class="bi bi-list mobile-nav-toggle"></i>
 			</nav><!-- .navbar -->
-			<a class="shop" href="/carrinho"><i class="bx bx-shopping-bag"></i></a>&emsp;
-			<a class="shop" href="/wp-admin"><i class="bx bx-user"></i></a>
+			<?php if (is_user_logged_in()){
+				echo '<a class="login-aluno" href="/wp-login.php?action=logout"><i class="ri-user-unfollow-line"></i></a>';		
+			}else{
+				echo '<a class="login-aluno" href="/wp-admin"><i class="ri-user-line"></i></a>';
+			}
+			?>
 		</div>
 	</header><!-- End Header -->

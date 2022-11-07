@@ -26,8 +26,8 @@ function debounce(func, wait, immediate) {
     var qsRegex;
 
     // init Isotope
-    var $grid = $('.grid-cursos').isotope({
-        itemSelector: '.cursos-item',
+    var $grid = $('.grid-aulas').isotope({
+        itemSelector: '.aulas-item',
         layoutMode: 'fitRows',        
         stagger: 10,
         hiddenStyle: {
@@ -46,7 +46,7 @@ function debounce(func, wait, immediate) {
         qsRegex = new RegExp($quicksearch.val(), 'gi');
         $grid.isotope();
         $('html, body').animate({
-            scrollTop: $('#grid-cursos').offset().top - 170
+            scrollTop: $('#grid-aulas').offset().top - 170
         }, 300);
     }, 200));
 

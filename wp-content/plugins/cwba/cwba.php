@@ -3,7 +3,7 @@
 /**
  * Plugin Name: CWBA
  * Plugin URI: https://ic.unicamp.br/~everton
- * Description: Plugin CWBA
+ * Description: Plugin para gerenciamento do site CWBA
  * Author: EvM.
  * Version: 1.0
  * Text Domain: CWBA
@@ -27,8 +27,24 @@ function add_db_access()
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
+    
+    //remove_role('contributor');
+    //remove_role('customer');
+    //remove_role('author');
+    //remove_role( 'shop_manager' );
+    add_role( 'aluno', 'Aluno', array( 'read' => true, 'level_0' => true ) );
+    flush_rewrite_rules();
+    
 }
 register_activation_hook(__FILE__, 'add_db_access');
+
+
+// DEACTIVATE *************************************************
+function deactivate()
+{
+    flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'deactivate');
 
 
 // FUNCTIONS ************************************************
@@ -37,8 +53,5 @@ include ABSPATH . '/wp-content/plugins/cwba/includes/functions.php';
 // SETTINGS ************************************************
 include ABSPATH . '/wp-content/plugins/cwba/includes/settings.php';
 
-// POSTMETA POST ************************************************
-include ABSPATH . '/wp-content/plugins/cwba/includes/postmeta-post.php';
-
-// POSTMETA PRODUCT ************************************************
-include ABSPATH . '/wp-content/plugins/cwba/includes/postmeta-product.php';
+// POSTMETA ************************************************
+include ABSPATH . '/wp-content/plugins/cwba/includes/post.php';

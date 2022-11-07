@@ -1,3 +1,6 @@
+#postdivrich.postarea, .page-title-action{
+    display: none;
+}
 .settings-cwba, .about-cwba{
     display: block;
     position: relative;
@@ -9,36 +12,23 @@
     margin-left: -5px;
     padding: 20px;
 }
-.settings-cwba .title, .about-cwba .title{
-    color: #f00;
-    
+.settings-cwba label{
+    display: block !important;
 }
-
-#curso_video_id input{
+.settings-cwba .wp-editor-wrap{
     width: 100%;
 }
 
+.settings-cwba .title, .about-cwba .title{
+    color: #000;
+}
 .settings-cwba hr, .about-cwba hr{
     background-color: #bbb !important;
     border: 1px solid #bbb !important;
 }
-.settings-cwba table, table.curso{
+.settings-cwba table{
     width: 65em;
     border-spacing: 0;
-}
-
-table.access{
-    width: 50%;
-    border-spacing: 0;
-}
-
-table.access th,table.access td{
-    border: 1px solid #ccc;
-    padding: 3px;
-}
-
-.settings-cwba .wp-editor-wrap{
-    width: 150%;
 }
 
 .settings-cwba table img{
@@ -59,10 +49,7 @@ table.access th,table.access td{
     margin-bottom: -3px;
 }
 
-.settings-cwba table td:nth-child(1),
-.settings-cwba table td:nth-child(3),
-table.curso td:nth-child(1),
-table.curso td:nth-child(3){
+.settings-cwba table td:nth-child(1),.settings-cwba table td:nth-child(3){
     width: 4em;
 }
 
@@ -73,26 +60,23 @@ table.curso td:nth-child(3){
 .settings-cwba table td:nth-child(2){
     width: 40em;   
 }
-
-table.curso td:nth-child(2){
-    width: 45em;   
-}
-
-.settings-cwba table td:nth-child(2) input,
-table.curso td:nth-child(2) input{
+.settings-cwba table td:nth-child(2) input{
     width: 100%;
 }
 
-#heateor_sss_meta{
-    display: none;
+table.access {
+    width: 50%;
+    border-spacing: 0;
+}
+table.access th{
+    background-color: #ccc;
+}
+table.access th,
+table.access td {
+    border: 1px solid #555;
+    padding: 3px;
 }
 
-.meta-box-sortables input.postmeta-cursos,.meta-box-sortables input.postmeta-post{
+.postmeta-post{
     width: 100%;
-}
-.woocommerce-layout,
-.woocommerce-layout span,
-.woocommerce-layout a,
-.woocommerce-layout td{
-    font-size: 14px !important;
 }
