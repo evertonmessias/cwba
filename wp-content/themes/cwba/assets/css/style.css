@@ -1808,6 +1808,9 @@ section {
   .navbar ul{
       background: transparent;
   }
+  .login-aluno{
+    margin-right: 30px;
+  }
 }
 
 .btn-primary{
