@@ -32,7 +32,7 @@ function add_db_access()
     //remove_role('customer');
     //remove_role('author');
     //remove_role( 'shop_manager' );
-    add_role( 'aluno', 'Aluno', array( 'read' => true, 'level_0' => true ) );
+    //add_role( 'aluno', 'Aluno', array( 'read' => true, 'level_0' => true ) );
     flush_rewrite_rules();
     
 }
