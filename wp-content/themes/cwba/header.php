@@ -53,9 +53,9 @@
 				<i class="bi bi-list mobile-nav-toggle"></i>
 			</nav><!-- .navbar -->
 			<?php if (is_user_logged_in()){
-				echo '<a class="login-aluno" href="/wp-login.php?action=logout"><i class="ri-user-unfollow-line"></i></a>';		
+				echo '<a class="login-aluno" title="Logout" href="/wp-login.php?action=logout"><i class="ri-user-unfollow-line"></i></a>';		
 			}else{
-				echo '<a class="login-aluno" href="/wp-admin"><i class="ri-user-line"></i></a>';
+				echo '<a class="login-aluno" title="Login" href="/wp-admin"><i class="ri-user-line"></i></a>';
 			}
 			?>
 		</div>
