@@ -54,14 +54,19 @@ $category = get_category_by_slug($base) ?>
                             );
                             $loop = new WP_Query($args);
                             foreach ($loop->posts as $post) {
+                                $vid = get_post_meta($post->ID, 'post_video', true);
                             ?>
                                 <div class="aulas-item col-lg-12 portfolio-item">
                                     <div class="row">
                                         <div class="col-lg-12">
+                                            <?php if($vid != ""){ ?>
                                             <a href="<?php echo get_the_permalink() ?>" class="details-link" title="Link">
                                                 <?php echo $post->post_title; ?>
                                             </a>
-                                            <a href="https://youtu.be/<?php echo get_post_meta($post->ID, 'post_video', true); ?>" class="venobox ico-play" title="Play" data-vbtype="video" data-autoplay="true"><i class="ri-video-line"></i></a>
+                                            <a href="https://youtu.be/<?php echo $vid; ?>" class="venobox ico-play" title="Play" data-vbtype="video" data-autoplay="true"><i class="ri-video-line"></i></a>
+                                            <?php }else{ ?>
+                                                <?php echo $post->post_title; ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>
