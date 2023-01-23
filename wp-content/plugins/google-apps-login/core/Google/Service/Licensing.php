@@ -28,182 +28,187 @@
  *
  * @author Google, Inc.
  */
-class GoogleGAL_Service_Licensing extends GoogleGAL_Service
-{
+class GoogleGAL_Service_Licensing extends GoogleGAL_Service {
 
 
-  public $licenseAssignments;
-  
 
-  /**
-   * Constructs the internal representation of the Licensing service.
-   *
-   * @param GoogleGAL_Client $client
-   */
-  public function __construct(GoogleGAL_Client $client)
-  {
-    parent::__construct($client);
-    $this->servicePath = 'apps/licensing/v1/product/';
-    $this->version = 'v1';
-    $this->serviceName = 'licensing';
+	public $licenseAssignments;
 
-    $this->licenseAssignments = new GoogleGAL_Service_Licensing_LicenseAssignments_Resource(
-        $this,
-        $this->serviceName,
-        'licenseAssignments',
-        array(
-          'methods' => array(
-            'delete' => array(
-              'path' => '{productId}/sku/{skuId}/user/{userId}',
-              'httpMethod' => 'DELETE',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'userId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),'get' => array(
-              'path' => '{productId}/sku/{skuId}/user/{userId}',
-              'httpMethod' => 'GET',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'userId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),'insert' => array(
-              'path' => '{productId}/sku/{skuId}/user',
-              'httpMethod' => 'POST',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),'listForProduct' => array(
-              'path' => '{productId}/users',
-              'httpMethod' => 'GET',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'customerId' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'pageToken' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                ),
-                'maxResults' => array(
-                  'location' => 'query',
-                  'type' => 'integer',
-                ),
-              ),
-            ),'listForProductAndSku' => array(
-              'path' => '{productId}/sku/{skuId}/users',
-              'httpMethod' => 'GET',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'customerId' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'pageToken' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                ),
-                'maxResults' => array(
-                  'location' => 'query',
-                  'type' => 'integer',
-                ),
-              ),
-            ),'patch' => array(
-              'path' => '{productId}/sku/{skuId}/user/{userId}',
-              'httpMethod' => 'PATCH',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'userId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),'update' => array(
-              'path' => '{productId}/sku/{skuId}/user/{userId}',
-              'httpMethod' => 'PUT',
-              'parameters' => array(
-                'productId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'skuId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-                'userId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),
-          )
-        )
-    );
-  }
+
+	/**
+	 * Constructs the internal representation of the Licensing service.
+	 *
+	 * @param GoogleGAL_Client $client
+	 */
+	public function __construct( GoogleGAL_Client $client ) {
+		parent::__construct( $client );
+		$this->servicePath = 'apps/licensing/v1/product/';
+		$this->version     = 'v1';
+		$this->serviceName = 'licensing';
+
+		$this->licenseAssignments = new GoogleGAL_Service_Licensing_LicenseAssignments_Resource(
+			$this,
+			$this->serviceName,
+			'licenseAssignments',
+			array(
+				'methods' => array(
+					'delete'               => array(
+						'path'       => '{productId}/sku/{skuId}/user/{userId}',
+						'httpMethod' => 'DELETE',
+						'parameters' => array(
+							'productId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'     => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'userId'    => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+					'get'                  => array(
+						'path'       => '{productId}/sku/{skuId}/user/{userId}',
+						'httpMethod' => 'GET',
+						'parameters' => array(
+							'productId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'     => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'userId'    => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+					'insert'               => array(
+						'path'       => '{productId}/sku/{skuId}/user',
+						'httpMethod' => 'POST',
+						'parameters' => array(
+							'productId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'     => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+					'listForProduct'       => array(
+						'path'       => '{productId}/users',
+						'httpMethod' => 'GET',
+						'parameters' => array(
+							'productId'  => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'customerId' => array(
+								'location' => 'query',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'pageToken'  => array(
+								'location' => 'query',
+								'type'     => 'string',
+							),
+							'maxResults' => array(
+								'location' => 'query',
+								'type'     => 'integer',
+							),
+						),
+					),
+					'listForProductAndSku' => array(
+						'path'       => '{productId}/sku/{skuId}/users',
+						'httpMethod' => 'GET',
+						'parameters' => array(
+							'productId'  => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'      => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'customerId' => array(
+								'location' => 'query',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'pageToken'  => array(
+								'location' => 'query',
+								'type'     => 'string',
+							),
+							'maxResults' => array(
+								'location' => 'query',
+								'type'     => 'integer',
+							),
+						),
+					),
+					'patch'                => array(
+						'path'       => '{productId}/sku/{skuId}/user/{userId}',
+						'httpMethod' => 'PATCH',
+						'parameters' => array(
+							'productId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'     => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'userId'    => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+					'update'               => array(
+						'path'       => '{productId}/sku/{skuId}/user/{userId}',
+						'httpMethod' => 'PUT',
+						'parameters' => array(
+							'productId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'skuId'     => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+							'userId'    => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+				),
+			)
+		);
+	}
 }
 
 
@@ -215,262 +220,259 @@ class GoogleGAL_Service_Licensing extends GoogleGAL_Service
  *   $licenseAssignments = $licensingService->licenseAssignments;
  *  </code>
  */
-class GoogleGAL_Service_Licensing_LicenseAssignments_Resource extends GoogleGAL_Service_Resource
-{
+class GoogleGAL_Service_Licensing_LicenseAssignments_Resource extends GoogleGAL_Service_Resource {
 
-  /**
-   * Revoke License. (licenseAssignments.delete)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku
-   * @param string $userId email id or unique Id of the user
-   * @param array $optParams Optional parameters.
-   */
-  public function delete($productId, $skuId, $userId, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'userId' => $userId);
-    $params = array_merge($params, $optParams);
-    return $this->call('delete', array($params));
-  }
 
-  /**
-   * Get license assignment of a particular product and sku for a user
-   * (licenseAssignments.get)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku
-   * @param string $userId email id or unique Id of the user
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignment
-   */
-  public function get($productId, $skuId, $userId, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'userId' => $userId);
-    $params = array_merge($params, $optParams);
-    return $this->call('get', array($params), "GoogleGAL_Service_Licensing_LicenseAssignment");
-  }
+	/**
+	 * Revoke License. (licenseAssignments.delete)
+	 *
+	 * @param string $productId Name for product
+	 * @param string $skuId Name for sku
+	 * @param string $userId email id or unique Id of the user
+	 * @param array  $optParams Optional parameters.
+	 */
+	public function delete( $productId, $skuId, $userId, $optParams = array() ) {
+		$params = array(
+			'productId' => $productId,
+			'skuId'     => $skuId,
+			'userId'    => $userId,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'delete', array( $params ) );
+	}
 
-  /**
-   * Assign License. (licenseAssignments.insert)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku
-   * @param GoogleGAL_LicenseAssignmentInsert $postBody
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignment
-   */
-  public function insert($productId, $skuId, GoogleGAL_Service_Licensing_LicenseAssignmentInsert $postBody, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('insert', array($params), "GoogleGAL_Service_Licensing_LicenseAssignment");
-  }
+	/**
+	 * Get license assignment of a particular product and sku for a user
+	 * (licenseAssignments.get)
+	 *
+	 * @param string $productId Name for product
+	 * @param string $skuId Name for sku
+	 * @param string $userId email id or unique Id of the user
+	 * @param array  $optParams Optional parameters.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignment
+	 */
+	public function get( $productId, $skuId, $userId, $optParams = array() ) {
+		$params = array(
+			'productId' => $productId,
+			'skuId'     => $skuId,
+			'userId'    => $userId,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'get', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignment' );
+	}
 
-  /**
-   * List license assignments for given product of the customer.
-   * (licenseAssignments.listForProduct)
-   *
-   * @param string $productId Name for product
-   * @param string $customerId CustomerId represents the customer for whom
-   * licenseassignments are queried
-   * @param array $optParams Optional parameters.
-   *
-   * @opt_param string pageToken Token to fetch the next page.Optional. By default
-   * server will return first page
-   * @opt_param string maxResults Maximum number of campaigns to return at one
-   * time. Must be positive. Optional. Default value is 100.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignmentList
-   */
-  public function listForProduct($productId, $customerId, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'customerId' => $customerId);
-    $params = array_merge($params, $optParams);
-    return $this->call('listForProduct', array($params), "GoogleGAL_Service_Licensing_LicenseAssignmentList");
-  }
+	/**
+	 * Assign License. (licenseAssignments.insert)
+	 *
+	 * @param string                            $productId Name for product
+	 * @param string                            $skuId Name for sku
+	 * @param GoogleGAL_LicenseAssignmentInsert $postBody
+	 * @param array                             $optParams Optional parameters.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignment
+	 */
+	public function insert( $productId, $skuId, GoogleGAL_Service_Licensing_LicenseAssignmentInsert $postBody, $optParams = array() ) {
+		$params = array(
+			'productId' => $productId,
+			'skuId'     => $skuId,
+			'postBody'  => $postBody,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'insert', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignment' );
+	}
 
-  /**
-   * List license assignments for given product and sku of the customer.
-   * (licenseAssignments.listForProductAndSku)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku
-   * @param string $customerId CustomerId represents the customer for whom
-   * licenseassignments are queried
-   * @param array $optParams Optional parameters.
-   *
-   * @opt_param string pageToken Token to fetch the next page.Optional. By default
-   * server will return first page
-   * @opt_param string maxResults Maximum number of campaigns to return at one
-   * time. Must be positive. Optional. Default value is 100.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignmentList
-   */
-  public function listForProductAndSku($productId, $skuId, $customerId, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'customerId' => $customerId);
-    $params = array_merge($params, $optParams);
-    return $this->call('listForProductAndSku', array($params), "GoogleGAL_Service_Licensing_LicenseAssignmentList");
-  }
+	/**
+	 * List license assignments for given product of the customer.
+	 * (licenseAssignments.listForProduct)
+	 *
+	 * @param string $productId Name for product
+	 * @param string $customerId CustomerId represents the customer for whom
+	 * licenseassignments are queried
+	 * @param array  $optParams Optional parameters.
+	 *
+	 * @opt_param string pageToken Token to fetch the next page.Optional. By default
+	 * server will return first page
+	 * @opt_param string maxResults Maximum number of campaigns to return at one
+	 * time. Must be positive. Optional. Default value is 100.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignmentList
+	 */
+	public function listForProduct( $productId, $customerId, $optParams = array() ) {
+		$params = array(
+			'productId'  => $productId,
+			'customerId' => $customerId,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'listForProduct', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignmentList' );
+	}
 
-  /**
-   * Assign License. This method supports patch semantics.
-   * (licenseAssignments.patch)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku for which license would be revoked
-   * @param string $userId email id or unique Id of the user
-   * @param GoogleGAL_LicenseAssignment $postBody
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignment
-   */
-  public function patch($productId, $skuId, $userId, GoogleGAL_Service_Licensing_LicenseAssignment $postBody, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'userId' => $userId, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('patch', array($params), "GoogleGAL_Service_Licensing_LicenseAssignment");
-  }
+	/**
+	 * List license assignments for given product and sku of the customer.
+	 * (licenseAssignments.listForProductAndSku)
+	 *
+	 * @param string $productId Name for product
+	 * @param string $skuId Name for sku
+	 * @param string $customerId CustomerId represents the customer for whom
+	 * licenseassignments are queried
+	 * @param array  $optParams Optional parameters.
+	 *
+	 * @opt_param string pageToken Token to fetch the next page.Optional. By default
+	 * server will return first page
+	 * @opt_param string maxResults Maximum number of campaigns to return at one
+	 * time. Must be positive. Optional. Default value is 100.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignmentList
+	 */
+	public function listForProductAndSku( $productId, $skuId, $customerId, $optParams = array() ) {
+		$params = array(
+			'productId'  => $productId,
+			'skuId'      => $skuId,
+			'customerId' => $customerId,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'listForProductAndSku', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignmentList' );
+	}
 
-  /**
-   * Assign License. (licenseAssignments.update)
-   *
-   * @param string $productId Name for product
-   * @param string $skuId Name for sku for which license would be revoked
-   * @param string $userId email id or unique Id of the user
-   * @param GoogleGAL_LicenseAssignment $postBody
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_Licensing_LicenseAssignment
-   */
-  public function update($productId, $skuId, $userId, GoogleGAL_Service_Licensing_LicenseAssignment $postBody, $optParams = array())
-  {
-    $params = array('productId' => $productId, 'skuId' => $skuId, 'userId' => $userId, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('update', array($params), "GoogleGAL_Service_Licensing_LicenseAssignment");
-  }
+	/**
+	 * Assign License. This method supports patch semantics.
+	 * (licenseAssignments.patch)
+	 *
+	 * @param string                      $productId Name for product
+	 * @param string                      $skuId Name for sku for which license would be revoked
+	 * @param string                      $userId email id or unique Id of the user
+	 * @param GoogleGAL_LicenseAssignment $postBody
+	 * @param array                       $optParams Optional parameters.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignment
+	 */
+	public function patch( $productId, $skuId, $userId, GoogleGAL_Service_Licensing_LicenseAssignment $postBody, $optParams = array() ) {
+		$params = array(
+			'productId' => $productId,
+			'skuId'     => $skuId,
+			'userId'    => $userId,
+			'postBody'  => $postBody,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'patch', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignment' );
+	}
+
+	/**
+	 * Assign License. (licenseAssignments.update)
+	 *
+	 * @param string                      $productId Name for product
+	 * @param string                      $skuId Name for sku for which license would be revoked
+	 * @param string                      $userId email id or unique Id of the user
+	 * @param GoogleGAL_LicenseAssignment $postBody
+	 * @param array                       $optParams Optional parameters.
+	 * @return GoogleGAL_Service_Licensing_LicenseAssignment
+	 */
+	public function update( $productId, $skuId, $userId, GoogleGAL_Service_Licensing_LicenseAssignment $postBody, $optParams = array() ) {
+		$params = array(
+			'productId' => $productId,
+			'skuId'     => $skuId,
+			'userId'    => $userId,
+			'postBody'  => $postBody,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'update', array( $params ), 'GoogleGAL_Service_Licensing_LicenseAssignment' );
+	}
 }
 
 
 
 
-class GoogleGAL_Service_Licensing_LicenseAssignment extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $etags;
-  public $kind;
-  public $productId;
-  public $selfLink;
-  public $skuId;
-  public $userId;
+class GoogleGAL_Service_Licensing_LicenseAssignment extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $etags;
+	public $kind;
+	public $productId;
+	public $selfLink;
+	public $skuId;
+	public $userId;
 
 
-  public function setEtags($etags)
-  {
-    $this->etags = $etags;
-  }
-  public function getEtags()
-  {
-    return $this->etags;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setProductId($productId)
-  {
-    $this->productId = $productId;
-  }
-  public function getProductId()
-  {
-    return $this->productId;
-  }
-  public function setSelfLink($selfLink)
-  {
-    $this->selfLink = $selfLink;
-  }
-  public function getSelfLink()
-  {
-    return $this->selfLink;
-  }
-  public function setSkuId($skuId)
-  {
-    $this->skuId = $skuId;
-  }
-  public function getSkuId()
-  {
-    return $this->skuId;
-  }
-  public function setUserId($userId)
-  {
-    $this->userId = $userId;
-  }
-  public function getUserId()
-  {
-    return $this->userId;
-  }
+	public function setEtags( $etags ) {
+		$this->etags = $etags;
+	}
+	public function getEtags() {
+		return $this->etags;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setProductId( $productId ) {
+		$this->productId = $productId;
+	}
+	public function getProductId() {
+		return $this->productId;
+	}
+	public function setSelfLink( $selfLink ) {
+		$this->selfLink = $selfLink;
+	}
+	public function getSelfLink() {
+		return $this->selfLink;
+	}
+	public function setSkuId( $skuId ) {
+		$this->skuId = $skuId;
+	}
+	public function getSkuId() {
+		return $this->skuId;
+	}
+	public function setUserId( $userId ) {
+		$this->userId = $userId;
+	}
+	public function getUserId() {
+		return $this->userId;
+	}
 }
 
-class GoogleGAL_Service_Licensing_LicenseAssignmentInsert extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $userId;
+class GoogleGAL_Service_Licensing_LicenseAssignmentInsert extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $userId;
 
 
-  public function setUserId($userId)
-  {
-    $this->userId = $userId;
-  }
-  public function getUserId()
-  {
-    return $this->userId;
-  }
+	public function setUserId( $userId ) {
+		$this->userId = $userId;
+	}
+	public function getUserId() {
+		return $this->userId;
+	}
 }
 
-class GoogleGAL_Service_Licensing_LicenseAssignmentList extends GoogleGAL_Collection
-{
-  protected $collection_key = 'items';
-  protected $internal_gapi_mappings = array(
-  );
-  public $etag;
-  protected $itemsType = 'GoogleGAL_Service_Licensing_LicenseAssignment';
-  protected $itemsDataType = 'array';
-  public $kind;
-  public $nextPageToken;
+class GoogleGAL_Service_Licensing_LicenseAssignmentList extends GoogleGAL_Collection {
+
+	protected $collection_key         = 'items';
+	protected $internal_gapi_mappings = array();
+	public $etag;
+	protected $itemsType     = 'GoogleGAL_Service_Licensing_LicenseAssignment';
+	protected $itemsDataType = 'array';
+	public $kind;
+	public $nextPageToken;
 
 
-  public function setEtag($etag)
-  {
-    $this->etag = $etag;
-  }
-  public function getEtag()
-  {
-    return $this->etag;
-  }
-  public function setItems($items)
-  {
-    $this->items = $items;
-  }
-  public function getItems()
-  {
-    return $this->items;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setNextPageToken($nextPageToken)
-  {
-    $this->nextPageToken = $nextPageToken;
-  }
-  public function getNextPageToken()
-  {
-    return $this->nextPageToken;
-  }
+	public function setEtag( $etag ) {
+		$this->etag = $etag;
+	}
+	public function getEtag() {
+		return $this->etag;
+	}
+	public function setItems( $items ) {
+		$this->items = $items;
+	}
+	public function getItems() {
+		return $this->items;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setNextPageToken( $nextPageToken ) {
+		$this->nextPageToken = $nextPageToken;
+	}
+	public function getNextPageToken() {
+		return $this->nextPageToken;
+	}
 }

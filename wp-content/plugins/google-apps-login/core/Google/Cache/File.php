@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /*
  * This class implements a basic on disk storage. While that does
@@ -25,166 +25,178 @@ require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
  *
  * @author Chris Chabot <chabotc@google.com>
  */
-class GoogleGAL_Cache_File extends GoogleGAL_Cache_Abstract
-{
-  const MAX_LOCK_RETRIES = 10;
-  private $path;
-  private $fh;
+class GoogleGAL_Cache_File extends GoogleGAL_Cache_Abstract {
 
-  /**
-   * @var GoogleGAL_Client the current client
-   */
-  private $client;
+	const MAX_LOCK_RETRIES = 10;
+	private $path;
+	private $fh;
 
-  public function __construct(GoogleGAL_Client $client)
-  {
-    $this->client = $client;
-    $this->path = $this->client->getClassConfig($this, 'directory');
-  }
+	/**
+	 * @var GoogleGAL_Client the current client
+	 */
+	private $client;
 
-  public function get($key, $expiration = false)
-  {
-    $storageFile = $this->getCacheFile($key);
-    $data = false;
+	public function __construct( GoogleGAL_Client $client ) {
+		$this->client = $client;
+		$this->path   = $this->client->getClassConfig( $this, 'directory' );
+	}
 
-    if (!file_exists($storageFile)) {
-      $this->client->getLogger()->debug(
-          'File cache miss',
-          array('key' => $key, 'file' => $storageFile)
-      );
-      return false;
-    }
+	public function get( $key, $expiration = false ) {
+		$storageFile = $this->getCacheFile( $key );
+		$data        = false;
 
-    if ($expiration) {
-      $mtime = filemtime($storageFile);
-      if ((time() - $mtime) >= $expiration) {
-        $this->client->getLogger()->debug(
-            'File cache miss (expired)',
-            array('key' => $key, 'file' => $storageFile)
-        );
-        $this->delete($key);
-        return false;
-      }
-    }
+		if ( ! file_exists( $storageFile ) ) {
+			$this->client->getLogger()->debug(
+				'File cache miss',
+				array(
+					'key'  => $key,
+					'file' => $storageFile,
+				)
+			);
+			return false;
+		}
 
-    if ($this->acquireReadLock($storageFile)) {
-      $data = fread($this->fh, filesize($storageFile));
-      $data =  unserialize($data);
-      $this->unlock($storageFile);
-    }
+		if ( $expiration ) {
+			$mtime = filemtime( $storageFile );
+			if ( ( time() - $mtime ) >= $expiration ) {
+				$this->client->getLogger()->debug(
+					'File cache miss (expired)',
+					array(
+						'key'  => $key,
+						'file' => $storageFile,
+					)
+				);
+				$this->delete( $key );
+				return false;
+			}
+		}
 
-    $this->client->getLogger()->debug(
-        'File cache hit',
-        array('key' => $key, 'file' => $storageFile, 'var' => $data)
-    );
+		if ( $this->acquireReadLock( $storageFile ) ) {
+			$data = fread( $this->fh, filesize( $storageFile ) );
+			$data = unserialize( $data );
+			$this->unlock( $storageFile );
+		}
 
-    return $data;
-  }
+		$this->client->getLogger()->debug(
+			'File cache hit',
+			array(
+				'key'  => $key,
+				'file' => $storageFile,
+				'var'  => $data,
+			)
+		);
 
-  public function set($key, $value)
-  {
-    $storageFile = $this->getWriteableCacheFile($key);
-    if ($this->acquireWriteLock($storageFile)) {
-      // We serialize the whole request object, since we don't only want the
-      // responseContent but also the postBody used, headers, size, etc.
-      $data = serialize($value);
-      $result = fwrite($this->fh, $data);
-      $this->unlock($storageFile);
+		return $data;
+	}
 
-      $this->client->getLogger()->debug(
-          'File cache set',
-          array('key' => $key, 'file' => $storageFile, 'var' => $value)
-      );
-    } else {
-      $this->client->getLogger()->notice(
-          'File cache set failed',
-          array('key' => $key, 'file' => $storageFile)
-      );
-    }
-  }
+	public function set( $key, $value ) {
+		$storageFile = $this->getWriteableCacheFile( $key );
+		if ( $this->acquireWriteLock( $storageFile ) ) {
+			// We serialize the whole request object, since we don't only want the
+			// responseContent but also the postBody used, headers, size, etc.
+			$data   = serialize( $value );
+			$result = fwrite( $this->fh, $data );
+			$this->unlock( $storageFile );
 
-  public function delete($key)
-  {
-    $file = $this->getCacheFile($key);
-    if (file_exists($file) && !unlink($file)) {
-      $this->client->getLogger()->error(
-          'File cache delete failed',
-          array('key' => $key, 'file' => $file)
-      );
-      throw new GoogleGAL_Cache_Exception("Cache file could not be deleted");
-    }
+			$this->client->getLogger()->debug(
+				'File cache set',
+				array(
+					'key'  => $key,
+					'file' => $storageFile,
+					'var'  => $value,
+				)
+			);
+		} else {
+			$this->client->getLogger()->notice(
+				'File cache set failed',
+				array(
+					'key'  => $key,
+					'file' => $storageFile,
+				)
+			);
+		}
+	}
 
-    $this->client->getLogger()->debug(
-        'File cache delete',
-        array('key' => $key, 'file' => $file)
-    );
-  }
+	public function delete( $key ) {
+		$file = $this->getCacheFile( $key );
+		if ( file_exists( $file ) && ! unlink( $file ) ) {
+			$this->client->getLogger()->error(
+				'File cache delete failed',
+				array(
+					'key'  => $key,
+					'file' => $file,
+				)
+			);
+			throw new GoogleGAL_Cache_Exception( 'Cache file could not be deleted' );
+		}
 
-  private function getWriteableCacheFile($file)
-  {
-    return $this->getCacheFile($file, true);
-  }
+		$this->client->getLogger()->debug(
+			'File cache delete',
+			array(
+				'key'  => $key,
+				'file' => $file,
+			)
+		);
+	}
 
-  private function getCacheFile($file, $forWrite = false)
-  {
-    return $this->getCacheDir($file, $forWrite) . '/' . md5($file);
-  }
+	private function getWriteableCacheFile( $file ) {
+		return $this->getCacheFile( $file, true );
+	}
 
-  private function getCacheDir($file, $forWrite)
-  {
-    // use the first 2 characters of the hash as a directory prefix
-    // this should prevent slowdowns due to huge directory listings
-    // and thus give some basic amount of scalability
-    $storageDir = $this->path . '/' . substr(md5($file), 0, 2);
-    if ($forWrite && ! is_dir($storageDir)) {
-      if (! mkdir($storageDir, 0755, true)) {
-        $this->client->getLogger()->error(
-            'File cache creation failed',
-            array('dir' => $storageDir)
-        );
-        throw new GoogleGAL_Cache_Exception("Could not create storage directory: $storageDir");
-      }
-    }
-    return $storageDir;
-  }
+	private function getCacheFile( $file, $forWrite = false ) {
+		return $this->getCacheDir( $file, $forWrite ) . '/' . md5( $file );
+	}
 
-  private function acquireReadLock($storageFile)
-  {
-    return $this->acquireLock(LOCK_SH, $storageFile);
-  }
+	private function getCacheDir( $file, $forWrite ) {
+		// use the first 2 characters of the hash as a directory prefix
+		// this should prevent slowdowns due to huge directory listings
+		// and thus give some basic amount of scalability
+		$storageDir = $this->path . '/' . substr( md5( $file ), 0, 2 );
+		if ( $forWrite && ! is_dir( $storageDir ) ) {
+			if ( ! mkdir( $storageDir, 0755, true ) ) {
+				$this->client->getLogger()->error(
+					'File cache creation failed',
+					array( 'dir' => $storageDir )
+				);
+				throw new GoogleGAL_Cache_Exception( "Could not create storage directory: $storageDir" );
+			}
+		}
+		return $storageDir;
+	}
 
-  private function acquireWriteLock($storageFile)
-  {
-    $rc = $this->acquireLock(LOCK_EX, $storageFile);
-    if (!$rc) {
-      $this->client->getLogger()->notice(
-          'File cache write lock failed',
-          array('file' => $storageFile)
-      );
-      $this->delete($storageFile);
-    }
-    return $rc;
-  }
+	private function acquireReadLock( $storageFile ) {
+		return $this->acquireLock( LOCK_SH, $storageFile );
+	}
 
-  private function acquireLock($type, $storageFile)
-  {
-    $mode = $type == LOCK_EX ? "w" : "r";
-    $this->fh = fopen($storageFile, $mode);
-    $count = 0;
-    while (!flock($this->fh, $type | LOCK_NB)) {
-      // Sleep for 10ms.
-      usleep(10000);
-      if (++$count < self::MAX_LOCK_RETRIES) {
-        return false;
-      }
-    }
-    return true;
-  }
+	private function acquireWriteLock( $storageFile ) {
+		$rc = $this->acquireLock( LOCK_EX, $storageFile );
+		if ( ! $rc ) {
+			$this->client->getLogger()->notice(
+				'File cache write lock failed',
+				array( 'file' => $storageFile )
+			);
+			$this->delete( $storageFile );
+		}
+		return $rc;
+	}
 
-  public function unlock($storageFile)
-  {
-    if ($this->fh) {
-      flock($this->fh, LOCK_UN);
-    }
-  }
+	private function acquireLock( $type, $storageFile ) {
+		$mode     = $type == LOCK_EX ? 'w' : 'r';
+		$this->fh = fopen( $storageFile, $mode );
+		$count    = 0;
+		while ( ! flock( $this->fh, $type | LOCK_NB ) ) {
+			// Sleep for 10ms.
+			usleep( 10000 );
+			if ( ++$count < self::MAX_LOCK_RETRIES ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function unlock( $storageFile ) {
+		if ( $this->fh ) {
+			flock( $this->fh, LOCK_UN );
+		}
+	}
 }

@@ -15,142 +15,136 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * File logging class based on the PSR-3 standard.
  *
  * This logger writes to a PHP stream resource.
  */
-class GoogleGAL_Logger_File extends GoogleGAL_Logger_Abstract
-{
-  /**
-   * @var string|resource $file Where logs are written
-   */
-  private $file;
-  /**
-   * @var integer $mode The mode to use if the log file needs to be created
-   */
-  private $mode = 0640;
-  /**
-   * @var boolean $lock If a lock should be attempted before writing to the log
-   */
-  private $lock = false;
+class GoogleGAL_Logger_File extends GoogleGAL_Logger_Abstract {
 
-  /**
-   * @var integer $trappedErrorNumber Trapped error number
-   */
-  private $trappedErrorNumber;
-  /**
-   * @var string $trappedErrorString Trapped error string
-   */
-  private $trappedErrorString;
+	/**
+	 * @var string|resource $file Where logs are written
+	 */
+	private $file;
+	/**
+	 * @var integer $mode The mode to use if the log file needs to be created
+	 */
+	private $mode = 0640;
+	/**
+	 * @var boolean $lock If a lock should be attempted before writing to the log
+	 */
+	private $lock = false;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(GoogleGAL_Client $client)
-  {
-    parent::__construct($client);
+	/**
+	 * @var integer $trappedErrorNumber Trapped error number
+	 */
+	private $trappedErrorNumber;
+	/**
+	 * @var string $trappedErrorString Trapped error string
+	 */
+	private $trappedErrorString;
 
-    $file = $client->getClassConfig('GoogleGAL_Logger_File', 'file');
-    if (!is_string($file) && !is_resource($file)) {
-      throw new GoogleGAL_Logger_Exception(
-          'File logger requires a filename or a valid file pointer'
-      );
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct( GoogleGAL_Client $client ) {
+		parent::__construct( $client );
 
-    $mode = $client->getClassConfig('GoogleGAL_Logger_File', 'mode');
-    if (!$mode) {
-      $this->mode = $mode;
-    }
+		$file = $client->getClassConfig( 'GoogleGAL_Logger_File', 'file' );
+		if ( ! is_string( $file ) && ! is_resource( $file ) ) {
+			throw new GoogleGAL_Logger_Exception(
+				'File logger requires a filename or a valid file pointer'
+			);
+		}
 
-    $this->lock = (bool) $client->getClassConfig('GoogleGAL_Logger_File', 'lock');
-    $this->file = $file;
-  }
+		$mode = $client->getClassConfig( 'GoogleGAL_Logger_File', 'mode' );
+		if ( ! $mode ) {
+			$this->mode = $mode;
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function write($message)
-  {
-    if (is_string($this->file)) {
-      $this->open();
-    } elseif (!is_resource($this->file)) {
-      throw new GoogleGAL_Logger_Exception('File pointer is no longer available');
-    }
+		$this->lock = (bool) $client->getClassConfig( 'GoogleGAL_Logger_File', 'lock' );
+		$this->file = $file;
+	}
 
-    if ($this->lock) {
-      flock($this->file, LOCK_EX);
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function write( $message ) {
+		if ( is_string( $this->file ) ) {
+			$this->open();
+		} elseif ( ! is_resource( $this->file ) ) {
+			throw new GoogleGAL_Logger_Exception( 'File pointer is no longer available' );
+		}
 
-    fwrite($this->file, (string) $message);
+		if ( $this->lock ) {
+			flock( $this->file, LOCK_EX );
+		}
 
-    if ($this->lock) {
-      flock($this->file, LOCK_UN);
-    }
-  }
+		fwrite( $this->file, (string) $message );
 
-  /**
-   * Opens the log for writing.
-   *
-   * @return resource
-   */
-  private function open()
-  {
-    // Used for trapping `fopen()` errors.
-    $this->trappedErrorNumber = null;
-    $this->trappedErrorString = null;
+		if ( $this->lock ) {
+			flock( $this->file, LOCK_UN );
+		}
+	}
 
-    $old = set_error_handler(array($this, 'trapError'));
+	/**
+	 * Opens the log for writing.
+	 *
+	 * @return resource
+	 */
+	private function open() {
+		// Used for trapping `fopen()` errors.
+		$this->trappedErrorNumber = null;
+		$this->trappedErrorString = null;
 
-    $needsChmod = !file_exists($this->file);
-    $fh = fopen($this->file, 'a');
+		$old = set_error_handler( array( $this, 'trapError' ) );
 
-    restore_error_handler();
+		$needsChmod = ! file_exists( $this->file );
+		$fh         = fopen( $this->file, 'a' );
 
-    // Handles trapped `fopen()` errors.
-    if ($this->trappedErrorNumber) {
-      throw new GoogleGAL_Logger_Exception(
-          sprintf(
-              "Logger Error: '%s'",
-              $this->trappedErrorString
-          ),
-          $this->trappedErrorNumber
-      );
-    }
+		restore_error_handler();
 
-    if ($needsChmod) {
-      @chmod($this->file, $this->mode & ~umask());
-    }
+		// Handles trapped `fopen()` errors.
+		if ( $this->trappedErrorNumber ) {
+			throw new GoogleGAL_Logger_Exception(
+				sprintf(
+					"Logger Error: '%s'",
+					$this->trappedErrorString
+				),
+				$this->trappedErrorNumber
+			);
+		}
 
-    return $this->file = $fh;
-  }
+		if ( $needsChmod ) {
+			@chmod( $this->file, $this->mode & ~umask() );
+		}
 
-  /**
-   * Closes the log stream resource.
-   */
-  private function close()
-  {
-    if (is_resource($this->file)) {
-      fclose($this->file);
-    }
-  }
+		return $this->file = $fh;
+	}
 
-  /**
-   * Traps `fopen()` errors.
-   *
-   * @param integer $errno The error number
-   * @param string $errstr The error string
-   */
-  private function trapError($errno, $errstr)
-  {
-    $this->trappedErrorNumber = $errno;
-    $this->trappedErrorString = $errstr;
-  }
+	/**
+	 * Closes the log stream resource.
+	 */
+	private function close() {
+		if ( is_resource( $this->file ) ) {
+			fclose( $this->file );
+		}
+	}
 
-  public function __destruct()
-  {
-    $this->close();
-  }
+	/**
+	 * Traps `fopen()` errors.
+	 *
+	 * @param integer $errno The error number
+	 * @param string  $errstr The error string
+	 */
+	private function trapError( $errno, $errstr ) {
+		$this->trappedErrorNumber = $errno;
+		$this->trappedErrorString = $errstr;
+	}
+
+	public function __destruct() {
+		$this->close();
+	}
 }

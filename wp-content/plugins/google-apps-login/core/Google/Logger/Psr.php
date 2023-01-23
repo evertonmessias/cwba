@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * Psr logging class based on the PSR-3 standard.
@@ -23,69 +23,64 @@ require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
  * This logger will delegate all logging to a PSR-3 compatible logger specified
  * with the `GoogleGAL_Logger_Psr::setLogger()` method.
  */
-class GoogleGAL_Logger_Psr extends GoogleGAL_Logger_Abstract
-{
-  /**
-   * @param Psr\Log\LoggerInterface $logger The PSR-3 logger
-   */
-  private $logger;
+class GoogleGAL_Logger_Psr extends GoogleGAL_Logger_Abstract {
 
-  /**
-   * @param GoogleGAL_Client $client           The current Google client
-   * @param Psr\Log\LoggerInterface $logger PSR-3 logger where logging will be delegated.
-   */
-  public function __construct(GoogleGAL_Client $client, /*Psr\Log\LoggerInterface*/ $logger = null)
-  {
-    parent::__construct($client);
+	/**
+	 * @param Psr\Log\LoggerInterface $logger The PSR-3 logger
+	 */
+	private $logger;
 
-    if ($logger) {
-      $this->setLogger($logger);
-    }
-  }
+	/**
+	 * @param GoogleGAL_Client        $client           The current Google client
+	 * @param Psr\Log\LoggerInterface $logger PSR-3 logger where logging will be delegated.
+	 */
+	public function __construct( GoogleGAL_Client $client, /*Psr\Log\LoggerInterface*/ $logger = null ) {
+		parent::__construct( $client );
 
-  /**
-   * Sets the PSR-3 logger where logging will be delegated.
-   *
-   * NOTE: The `$logger` should technically implement
-   * `Psr\Log\LoggerInterface`, but we don't explicitly require this so that
-   * we can be compatible with PHP 5.2.
-   *
-   * @param Psr\Log\LoggerInterface $logger The PSR-3 logger
-   */
-  public function setLogger(/*Psr\Log\LoggerInterface*/ $logger)
-  {
-    $this->logger = $logger;
-  }
+		if ( $logger ) {
+			$this->setLogger( $logger );
+		}
+	}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function shouldHandle($level)
-  {
-    return isset($this->logger) && parent::shouldHandle($level);
-  }
+	/**
+	 * Sets the PSR-3 logger where logging will be delegated.
+	 *
+	 * NOTE: The `$logger` should technically implement
+	 * `Psr\Log\LoggerInterface`, but we don't explicitly require this so that
+	 * we can be compatible with PHP 5.2.
+	 *
+	 * @param Psr\Log\LoggerInterface $logger The PSR-3 logger
+	 */
+	public function setLogger( /*Psr\Log\LoggerInterface*/ $logger ) {
+		$this->logger = $logger;
+	}
 
-  /**
-   * {@inheritdoc}
-   */
-  public function log($level, $message, array $context = array())
-  {
-    if (!$this->shouldHandle($level)) {
-      return false;
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function shouldHandle( $level ) {
+		return isset( $this->logger ) && parent::shouldHandle( $level );
+	}
 
-    if ($context) {
-      $this->reverseJsonInContext($context);
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function log( $level, $message, array $context = array() ) {
+		if ( ! $this->shouldHandle( $level ) ) {
+			return false;
+		}
 
-    $levelName = is_int($level) ? array_search($level, self::$levels) : $level;
-    $this->logger->log($levelName, $message, $context);
-  }
+		if ( $context ) {
+			$this->reverseJsonInContext( $context );
+		}
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function write($message, array $context = array())
-  {
-  }
+		$levelName = is_int( $level ) ? array_search( $level, self::$levels ) : $level;
+		$this->logger->log( $levelName, $message, $context );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function write( $message, array $context = array() ) {
+	}
 }

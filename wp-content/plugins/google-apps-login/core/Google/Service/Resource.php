@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * Implements the actual methods/resources of the discovered Google API using magic function
@@ -24,219 +24,246 @@ require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
  *
  * @author Chris Chabot <chabotc@google.com>
  * @author Chirag Shah <chirags@google.com>
- *
  */
-class GoogleGAL_Service_Resource
-{
-  // Valid query parameters that work, but don't appear in discovery.
-  private $stackParameters = array(
-      'alt' => array('type' => 'string', 'location' => 'query'),
-      'fields' => array('type' => 'string', 'location' => 'query'),
-      'trace' => array('type' => 'string', 'location' => 'query'),
-      'userIp' => array('type' => 'string', 'location' => 'query'),
-      'userip' => array('type' => 'string', 'location' => 'query'),
-      'quotaUser' => array('type' => 'string', 'location' => 'query'),
-      'data' => array('type' => 'string', 'location' => 'body'),
-      'mimeType' => array('type' => 'string', 'location' => 'header'),
-      'uploadType' => array('type' => 'string', 'location' => 'query'),
-      'mediaUpload' => array('type' => 'complex', 'location' => 'query'),
-  );
+class GoogleGAL_Service_Resource {
 
-  /** @var GoogleGAL_Service $service */
-  private $service;
+	// Valid query parameters that work, but don't appear in discovery.
+	private $stackParameters = array(
+		'alt'         => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'fields'      => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'trace'       => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'userIp'      => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'userip'      => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'quotaUser'   => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'data'        => array(
+			'type'     => 'string',
+			'location' => 'body',
+		),
+		'mimeType'    => array(
+			'type'     => 'string',
+			'location' => 'header',
+		),
+		'uploadType'  => array(
+			'type'     => 'string',
+			'location' => 'query',
+		),
+		'mediaUpload' => array(
+			'type'     => 'complex',
+			'location' => 'query',
+		),
+	);
 
-  /** @var GoogleGAL_Client $client */
-  private $client;
+	/** @var GoogleGAL_Service $service */
+	private $service;
 
-  /** @var string $serviceName */
-  private $serviceName;
+	/** @var GoogleGAL_Client $client */
+	private $client;
 
-  /** @var string $resourceName */
-  private $resourceName;
+	/** @var string $serviceName */
+	private $serviceName;
 
-  /** @var array $methods */
-  private $methods;
+	/** @var string $resourceName */
+	private $resourceName;
 
-  public function __construct($service, $serviceName, $resourceName, $resource)
-  {
-    $this->service = $service;
-    $this->client = $service->getClient();
-    $this->serviceName = $serviceName;
-    $this->resourceName = $resourceName;
-    $this->methods = isset($resource['methods']) ?
-        $resource['methods'] :
-        array($resourceName => $resource);
-  }
+	/** @var array $methods */
+	private $methods;
 
-  /**
-   * TODO(ianbarber): This function needs simplifying.
-   * @param $name
-   * @param $arguments
-   * @param $expected_class - optional, the expected class name
-   * @return GoogleGAL_Http_Request|expected_class
-   * @throws GoogleGAL_Exception
-   */
-  public function call($name, $arguments, $expected_class = null)
-  {
-    if (! isset($this->methods[$name])) {
-      $this->client->getLogger()->error(
-          'Service method unknown',
-          array(
-              'service' => $this->serviceName,
-              'resource' => $this->resourceName,
-              'method' => $name
-          )
-      );
+	public function __construct( $service, $serviceName, $resourceName, $resource ) {
+		$this->service      = $service;
+		$this->client       = $service->getClient();
+		$this->serviceName  = $serviceName;
+		$this->resourceName = $resourceName;
+		$this->methods      = isset( $resource['methods'] ) ?
+		$resource['methods'] :
+		array( $resourceName => $resource );
+	}
 
-      throw new GoogleGAL_Exception(
-          "Unknown function: " .
-          "{$this->serviceName}->{$this->resourceName}->{$name}()"
-      );
-    }
-    $method = $this->methods[$name];
-    $parameters = $arguments[0];
+	/**
+	 * TODO(ianbarber): This function needs simplifying.
+	 *
+	 * @param $name
+	 * @param $arguments
+	 * @param $expected_class - optional, the expected class name
+	 * @return GoogleGAL_Http_Request|expected_class
+	 * @throws GoogleGAL_Exception
+	 */
+	public function call( $name, $arguments, $expected_class = null ) {
+		if ( ! isset( $this->methods[ $name ] ) ) {
+			$this->client->getLogger()->error(
+				'Service method unknown',
+				array(
+					'service'  => $this->serviceName,
+					'resource' => $this->resourceName,
+					'method'   => $name,
+				)
+			);
 
-    // postBody is a special case since it's not defined in the discovery
-    // document as parameter, but we abuse the param entry for storing it.
-    $postBody = null;
-    if (isset($parameters['postBody'])) {
-      if ($parameters['postBody'] instanceof GoogleGAL_Model) {
-        // In the cases the post body is an existing object, we want
-        // to use the smart method to create a simple object for
-        // for JSONification.
-        $parameters['postBody'] = $parameters['postBody']->toSimpleObject();
-      } else if (is_object($parameters['postBody'])) {
-        // If the post body is another kind of object, we will try and
-        // wrangle it into a sensible format.
-        $parameters['postBody'] =
-            $this->convertToArrayAndStripNulls($parameters['postBody']);
-      }
-      $postBody = json_encode($parameters['postBody']);
-      unset($parameters['postBody']);
-    }
+			throw new GoogleGAL_Exception(
+				'Unknown function: ' .
+				"{$this->serviceName}->{$this->resourceName}->{$name}()"
+			);
+		}
+		$method     = $this->methods[ $name ];
+		$parameters = $arguments[0];
 
-    // TODO(ianbarber): optParams here probably should have been
-    // handled already - this may well be redundant code.
-    if (isset($parameters['optParams'])) {
-      $optParams = $parameters['optParams'];
-      unset($parameters['optParams']);
-      $parameters = array_merge($parameters, $optParams);
-    }
+		// postBody is a special case since it's not defined in the discovery
+		// document as parameter, but we abuse the param entry for storing it.
+		$postBody = null;
+		if ( isset( $parameters['postBody'] ) ) {
+			if ( $parameters['postBody'] instanceof GoogleGAL_Model ) {
+				// In the cases the post body is an existing object, we want
+				// to use the smart method to create a simple object for
+				// for JSONification.
+				$parameters['postBody'] = $parameters['postBody']->toSimpleObject();
+			} elseif ( is_object( $parameters['postBody'] ) ) {
+				// If the post body is another kind of object, we will try and
+				// wrangle it into a sensible format.
+				$parameters['postBody'] =
+				$this->convertToArrayAndStripNulls( $parameters['postBody'] );
+			}
+			$postBody = json_encode( $parameters['postBody'] );
+			unset( $parameters['postBody'] );
+		}
 
-    if (!isset($method['parameters'])) {
-      $method['parameters'] = array();
-    }
+		// TODO(ianbarber): optParams here probably should have been
+		// handled already - this may well be redundant code.
+		if ( isset( $parameters['optParams'] ) ) {
+			$optParams = $parameters['optParams'];
+			unset( $parameters['optParams'] );
+			$parameters = array_merge( $parameters, $optParams );
+		}
 
-    $method['parameters'] = array_merge(
-        $method['parameters'],
-        $this->stackParameters
-    );
-    foreach ($parameters as $key => $val) {
-      if ($key != 'postBody' && ! isset($method['parameters'][$key])) {
-        $this->client->getLogger()->error(
-            'Service parameter unknown',
-            array(
-                'service' => $this->serviceName,
-                'resource' => $this->resourceName,
-                'method' => $name,
-                'parameter' => $key
-            )
-        );
-        throw new GoogleGAL_Exception("($name) unknown parameter: '$key'");
-      }
-    }
+		if ( ! isset( $method['parameters'] ) ) {
+			$method['parameters'] = array();
+		}
 
-    foreach ($method['parameters'] as $paramName => $paramSpec) {
-      if (isset($paramSpec['required']) &&
-          $paramSpec['required'] &&
-          ! isset($parameters[$paramName])
-      ) {
-        $this->client->getLogger()->error(
-            'Service parameter missing',
-            array(
-                'service' => $this->serviceName,
-                'resource' => $this->resourceName,
-                'method' => $name,
-                'parameter' => $paramName
-            )
-        );
-        throw new GoogleGAL_Exception("($name) missing required param: '$paramName'");
-      }
-      if (isset($parameters[$paramName])) {
-        $value = $parameters[$paramName];
-        $parameters[$paramName] = $paramSpec;
-        $parameters[$paramName]['value'] = $value;
-        unset($parameters[$paramName]['required']);
-      } else {
-        // Ensure we don't pass nulls.
-        unset($parameters[$paramName]);
-      }
-    }
+		$method['parameters'] = array_merge(
+			$method['parameters'],
+			$this->stackParameters
+		);
+		foreach ( $parameters as $key => $val ) {
+			if ( $key != 'postBody' && ! isset( $method['parameters'][ $key ] ) ) {
+				$this->client->getLogger()->error(
+					'Service parameter unknown',
+					array(
+						'service'   => $this->serviceName,
+						'resource'  => $this->resourceName,
+						'method'    => $name,
+						'parameter' => $key,
+					)
+				);
+				throw new GoogleGAL_Exception( "($name) unknown parameter: '$key'" );
+			}
+		}
 
-    $servicePath = $this->service->servicePath;
+		foreach ( $method['parameters'] as $paramName => $paramSpec ) {
+			if ( isset( $paramSpec['required'] ) &&
+			$paramSpec['required'] &&
+			! isset( $parameters[ $paramName ] )
+			) {
+				$this->client->getLogger()->error(
+					'Service parameter missing',
+					array(
+						'service'   => $this->serviceName,
+						'resource'  => $this->resourceName,
+						'method'    => $name,
+						'parameter' => $paramName,
+					)
+				);
+				throw new GoogleGAL_Exception( "($name) missing required param: '$paramName'" );
+			}
+			if ( isset( $parameters[ $paramName ] ) ) {
+				$value                             = $parameters[ $paramName ];
+				$parameters[ $paramName ]          = $paramSpec;
+				$parameters[ $paramName ]['value'] = $value;
+				unset( $parameters[ $paramName ]['required'] );
+			} else {
+				// Ensure we don't pass nulls.
+				unset( $parameters[ $paramName ] );
+			}
+		}
 
-    $this->client->getLogger()->info(
-        'Service Call',
-        array(
-            'service' => $this->serviceName,
-            'resource' => $this->resourceName,
-            'method' => $name,
-            'arguments' => $parameters,
-        )
-    );
+		$servicePath = $this->service->servicePath;
 
-    $url = GoogleGAL_Http_REST::createRequestUri(
-        $servicePath,
-        $method['path'],
-        $parameters
-    );
-    $httpRequest = new GoogleGAL_Http_Request(
-        $url,
-        $method['httpMethod'],
-        null,
-        $postBody
-    );
-    $httpRequest->setBaseComponent($this->client->getBasePath());
+		$this->client->getLogger()->info(
+			'Service Call',
+			array(
+				'service'   => $this->serviceName,
+				'resource'  => $this->resourceName,
+				'method'    => $name,
+				'arguments' => $parameters,
+			)
+		);
 
-    if ($postBody) {
-      $contentTypeHeader = array();
-      $contentTypeHeader['content-type'] = 'application/json; charset=UTF-8';
-      $httpRequest->setRequestHeaders($contentTypeHeader);
-      $httpRequest->setPostBody($postBody);
-    }
+		$url         = GoogleGAL_Http_REST::createRequestUri(
+			$servicePath,
+			$method['path'],
+			$parameters
+		);
+		$httpRequest = new GoogleGAL_Http_Request(
+			$url,
+			$method['httpMethod'],
+			null,
+			$postBody
+		);
+		$httpRequest->setBaseComponent( $this->client->getBasePath() );
 
-    $httpRequest = $this->client->getAuth()->sign($httpRequest);
-    $httpRequest->setExpectedClass($expected_class);
+		if ( $postBody ) {
+			$contentTypeHeader                 = array();
+			$contentTypeHeader['content-type'] = 'application/json; charset=UTF-8';
+			$httpRequest->setRequestHeaders( $contentTypeHeader );
+			$httpRequest->setPostBody( $postBody );
+		}
 
-    if (isset($parameters['data']) &&
-        ($parameters['uploadType']['value'] == 'media' || $parameters['uploadType']['value'] == 'multipart')) {
-      // If we are doing a simple media upload, trigger that as a convenience.
-      $mfu = new GoogleGAL_Http_MediaFileUpload(
-          $this->client,
-          $httpRequest,
-          isset($parameters['mimeType']) ? $parameters['mimeType']['value'] : 'application/octet-stream',
-          $parameters['data']['value']
-      );
-    }
+		$httpRequest = $this->client->getAuth()->sign( $httpRequest );
+		$httpRequest->setExpectedClass( $expected_class );
 
-    if ($this->client->shouldDefer()) {
-      // If we are in batch or upload mode, return the raw request.
-      return $httpRequest;
-    }
+		if ( isset( $parameters['data'] ) &&
+		( $parameters['uploadType']['value'] == 'media' || $parameters['uploadType']['value'] == 'multipart' ) ) {
+			// If we are doing a simple media upload, trigger that as a convenience.
+			$mfu = new GoogleGAL_Http_MediaFileUpload(
+				$this->client,
+				$httpRequest,
+				isset( $parameters['mimeType'] ) ? $parameters['mimeType']['value'] : 'application/octet-stream',
+				$parameters['data']['value']
+			);
+		}
 
-    return $this->client->execute($httpRequest);
-  }
+		if ( $this->client->shouldDefer() ) {
+			// If we are in batch or upload mode, return the raw request.
+			return $httpRequest;
+		}
 
-  protected function convertToArrayAndStripNulls($o)
-  {
-    $o = (array) $o;
-    foreach ($o as $k => $v) {
-      if ($v === null) {
-        unset($o[$k]);
-      } elseif (is_object($v) || is_array($v)) {
-        $o[$k] = $this->convertToArrayAndStripNulls($o[$k]);
-      }
-    }
-    return $o;
-  }
+		return $this->client->execute( $httpRequest );
+	}
+
+	protected function convertToArrayAndStripNulls( $o ) {
+		$o = (array) $o;
+		foreach ( $o as $k => $v ) {
+			if ( $v === null ) {
+				unset( $o[ $k ] );
+			} elseif ( is_object( $v ) || is_array( $v ) ) {
+				$o[ $k ] = $this->convertToArrayAndStripNulls( $o[ $k ] );
+			}
+		}
+		return $o;
+	}
 }

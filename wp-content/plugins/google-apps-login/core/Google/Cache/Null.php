@@ -15,41 +15,37 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * A blank storage class, for cases where caching is not
  * required.
  */
-class GoogleGAL_Cache_Null extends GoogleGAL_Cache_Abstract
-{
-  public function __construct(GoogleGAL_Client $client)
-  {
+class GoogleGAL_Cache_Null extends GoogleGAL_Cache_Abstract {
 
-  }
+	public function __construct( GoogleGAL_Client $client ) {
 
-   /**
-   * @inheritDoc
-   */
-  public function get($key, $expiration = false)
-  {
-    return false;
-  }
+	}
 
-  /**
-   * @inheritDoc
-   */
-  public function set($key, $value)
-  {
-    // Nop.
-  }
+	/**
+	 * @inheritDoc
+	 */
+	public function get( $key, $expiration = false ) {
+		return false;
+	}
 
-  /**
-   * @inheritDoc
-   * @param String $key
-   */
-  public function delete($key)
-  {
-    // Nop.
-  }
+	/**
+	 * @inheritDoc
+	 */
+	public function set( $key, $value ) {
+		// Nop.
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param String $key
+	 */
+	public function delete( $key ) {
+		// Nop.
+	}
 }

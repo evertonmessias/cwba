@@ -28,95 +28,98 @@
  *
  * @author Google, Inc.
  */
-class GoogleGAL_Service_AppState extends GoogleGAL_Service
-{
-  /** View and manage your data for this application. */
-  const APPSTATE =
-      "https://www.googleapis.com/auth/appstate";
+class GoogleGAL_Service_AppState extends GoogleGAL_Service {
 
-  public $states;
-  
+	/** View and manage your data for this application. */
+	const APPSTATE =
+	  'https://www.googleapis.com/auth/appstate';
 
-  /**
-   * Constructs the internal representation of the AppState service.
-   *
-   * @param GoogleGAL_Client $client
-   */
-  public function __construct(GoogleGAL_Client $client)
-  {
-    parent::__construct($client);
-    $this->servicePath = 'appstate/v1/';
-    $this->version = 'v1';
-    $this->serviceName = 'appstate';
+	public $states;
 
-    $this->states = new GoogleGAL_Service_AppState_States_Resource(
-        $this,
-        $this->serviceName,
-        'states',
-        array(
-          'methods' => array(
-            'clear' => array(
-              'path' => 'states/{stateKey}/clear',
-              'httpMethod' => 'POST',
-              'parameters' => array(
-                'stateKey' => array(
-                  'location' => 'path',
-                  'type' => 'integer',
-                  'required' => true,
-                ),
-                'currentDataVersion' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                ),
-              ),
-            ),'delete' => array(
-              'path' => 'states/{stateKey}',
-              'httpMethod' => 'DELETE',
-              'parameters' => array(
-                'stateKey' => array(
-                  'location' => 'path',
-                  'type' => 'integer',
-                  'required' => true,
-                ),
-              ),
-            ),'get' => array(
-              'path' => 'states/{stateKey}',
-              'httpMethod' => 'GET',
-              'parameters' => array(
-                'stateKey' => array(
-                  'location' => 'path',
-                  'type' => 'integer',
-                  'required' => true,
-                ),
-              ),
-            ),'list' => array(
-              'path' => 'states',
-              'httpMethod' => 'GET',
-              'parameters' => array(
-                'includeData' => array(
-                  'location' => 'query',
-                  'type' => 'boolean',
-                ),
-              ),
-            ),'update' => array(
-              'path' => 'states/{stateKey}',
-              'httpMethod' => 'PUT',
-              'parameters' => array(
-                'stateKey' => array(
-                  'location' => 'path',
-                  'type' => 'integer',
-                  'required' => true,
-                ),
-                'currentStateVersion' => array(
-                  'location' => 'query',
-                  'type' => 'string',
-                ),
-              ),
-            ),
-          )
-        )
-    );
-  }
+
+	/**
+	 * Constructs the internal representation of the AppState service.
+	 *
+	 * @param GoogleGAL_Client $client
+	 */
+	public function __construct( GoogleGAL_Client $client ) {
+		parent::__construct( $client );
+		$this->servicePath = 'appstate/v1/';
+		$this->version     = 'v1';
+		$this->serviceName = 'appstate';
+
+		$this->states = new GoogleGAL_Service_AppState_States_Resource(
+			$this,
+			$this->serviceName,
+			'states',
+			array(
+				'methods' => array(
+					'clear'  => array(
+						'path'       => 'states/{stateKey}/clear',
+						'httpMethod' => 'POST',
+						'parameters' => array(
+							'stateKey'           => array(
+								'location' => 'path',
+								'type'     => 'integer',
+								'required' => true,
+							),
+							'currentDataVersion' => array(
+								'location' => 'query',
+								'type'     => 'string',
+							),
+						),
+					),
+					'delete' => array(
+						'path'       => 'states/{stateKey}',
+						'httpMethod' => 'DELETE',
+						'parameters' => array(
+							'stateKey' => array(
+								'location' => 'path',
+								'type'     => 'integer',
+								'required' => true,
+							),
+						),
+					),
+					'get'    => array(
+						'path'       => 'states/{stateKey}',
+						'httpMethod' => 'GET',
+						'parameters' => array(
+							'stateKey' => array(
+								'location' => 'path',
+								'type'     => 'integer',
+								'required' => true,
+							),
+						),
+					),
+					'list'   => array(
+						'path'       => 'states',
+						'httpMethod' => 'GET',
+						'parameters' => array(
+							'includeData' => array(
+								'location' => 'query',
+								'type'     => 'boolean',
+							),
+						),
+					),
+					'update' => array(
+						'path'       => 'states/{stateKey}',
+						'httpMethod' => 'PUT',
+						'parameters' => array(
+							'stateKey'            => array(
+								'location' => 'path',
+								'type'     => 'integer',
+								'required' => true,
+							),
+							'currentStateVersion' => array(
+								'location' => 'query',
+								'type'     => 'string',
+							),
+						),
+					),
+				),
+			)
+		);
+	}
 }
 
 
@@ -128,241 +131,211 @@ class GoogleGAL_Service_AppState extends GoogleGAL_Service
  *   $states = $appstateService->states;
  *  </code>
  */
-class GoogleGAL_Service_AppState_States_Resource extends GoogleGAL_Service_Resource
-{
+class GoogleGAL_Service_AppState_States_Resource extends GoogleGAL_Service_Resource {
 
-  /**
-   * Clears (sets to empty) the data for the passed key if and only if the passed
-   * version matches the currently stored version. This method results in a
-   * conflict error on version mismatch. (states.clear)
-   *
-   * @param int $stateKey The key for the data to be retrieved.
-   * @param array $optParams Optional parameters.
-   *
-   * @opt_param string currentDataVersion The version of the data to be cleared.
-   * Version strings are returned by the server.
-   * @return GoogleGAL_Service_AppState_WriteResult
-   */
-  public function clear($stateKey, $optParams = array())
-  {
-    $params = array('stateKey' => $stateKey);
-    $params = array_merge($params, $optParams);
-    return $this->call('clear', array($params), "GoogleGAL_Service_AppState_WriteResult");
-  }
 
-  /**
-   * Deletes a key and the data associated with it. The key is removed and no
-   * longer counts against the key quota. Note that since this method is not safe
-   * in the face of concurrent modifications, it should only be used for
-   * development and testing purposes. Invoking this method in shipping code can
-   * result in data loss and data corruption. (states.delete)
-   *
-   * @param int $stateKey The key for the data to be retrieved.
-   * @param array $optParams Optional parameters.
-   */
-  public function delete($stateKey, $optParams = array())
-  {
-    $params = array('stateKey' => $stateKey);
-    $params = array_merge($params, $optParams);
-    return $this->call('delete', array($params));
-  }
+	/**
+	 * Clears (sets to empty) the data for the passed key if and only if the passed
+	 * version matches the currently stored version. This method results in a
+	 * conflict error on version mismatch. (states.clear)
+	 *
+	 * @param int   $stateKey The key for the data to be retrieved.
+	 * @param array $optParams Optional parameters.
+	 *
+	 * @opt_param string currentDataVersion The version of the data to be cleared.
+	 * Version strings are returned by the server.
+	 * @return GoogleGAL_Service_AppState_WriteResult
+	 */
+	public function clear( $stateKey, $optParams = array() ) {
+		$params = array( 'stateKey' => $stateKey );
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'clear', array( $params ), 'GoogleGAL_Service_AppState_WriteResult' );
+	}
 
-  /**
-   * Retrieves the data corresponding to the passed key. If the key does not exist
-   * on the server, an HTTP 404 will be returned. (states.get)
-   *
-   * @param int $stateKey The key for the data to be retrieved.
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_AppState_GetResponse
-   */
-  public function get($stateKey, $optParams = array())
-  {
-    $params = array('stateKey' => $stateKey);
-    $params = array_merge($params, $optParams);
-    return $this->call('get', array($params), "GoogleGAL_Service_AppState_GetResponse");
-  }
+	/**
+	 * Deletes a key and the data associated with it. The key is removed and no
+	 * longer counts against the key quota. Note that since this method is not safe
+	 * in the face of concurrent modifications, it should only be used for
+	 * development and testing purposes. Invoking this method in shipping code can
+	 * result in data loss and data corruption. (states.delete)
+	 *
+	 * @param int   $stateKey The key for the data to be retrieved.
+	 * @param array $optParams Optional parameters.
+	 */
+	public function delete( $stateKey, $optParams = array() ) {
+		$params = array( 'stateKey' => $stateKey );
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'delete', array( $params ) );
+	}
 
-  /**
-   * Lists all the states keys, and optionally the state data. (states.listStates)
-   *
-   * @param array $optParams Optional parameters.
-   *
-   * @opt_param bool includeData Whether to include the full data in addition to
-   * the version number
-   * @return GoogleGAL_Service_AppState_ListResponse
-   */
-  public function listStates($optParams = array())
-  {
-    $params = array();
-    $params = array_merge($params, $optParams);
-    return $this->call('list', array($params), "GoogleGAL_Service_AppState_ListResponse");
-  }
+	/**
+	 * Retrieves the data corresponding to the passed key. If the key does not exist
+	 * on the server, an HTTP 404 will be returned. (states.get)
+	 *
+	 * @param int   $stateKey The key for the data to be retrieved.
+	 * @param array $optParams Optional parameters.
+	 * @return GoogleGAL_Service_AppState_GetResponse
+	 */
+	public function get( $stateKey, $optParams = array() ) {
+		$params = array( 'stateKey' => $stateKey );
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'get', array( $params ), 'GoogleGAL_Service_AppState_GetResponse' );
+	}
 
-  /**
-   * Update the data associated with the input key if and only if the passed
-   * version matches the currently stored version. This method is safe in the face
-   * of concurrent writes. Maximum per-key size is 128KB. (states.update)
-   *
-   * @param int $stateKey The key for the data to be retrieved.
-   * @param GoogleGAL_UpdateRequest $postBody
-   * @param array $optParams Optional parameters.
-   *
-   * @opt_param string currentStateVersion The version of the app state your
-   * application is attempting to update. If this does not match the current
-   * version, this method will return a conflict error. If there is no data stored
-   * on the server for this key, the update will succeed irrespective of the value
-   * of this parameter.
-   * @return GoogleGAL_Service_AppState_WriteResult
-   */
-  public function update($stateKey, GoogleGAL_Service_AppState_UpdateRequest $postBody, $optParams = array())
-  {
-    $params = array('stateKey' => $stateKey, 'postBody' => $postBody);
-    $params = array_merge($params, $optParams);
-    return $this->call('update', array($params), "GoogleGAL_Service_AppState_WriteResult");
-  }
+	/**
+	 * Lists all the states keys, and optionally the state data. (states.listStates)
+	 *
+	 * @param array $optParams Optional parameters.
+	 *
+	 * @opt_param bool includeData Whether to include the full data in addition to
+	 * the version number
+	 * @return GoogleGAL_Service_AppState_ListResponse
+	 */
+	public function listStates( $optParams = array() ) {
+		$params = array();
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'list', array( $params ), 'GoogleGAL_Service_AppState_ListResponse' );
+	}
+
+	/**
+	 * Update the data associated with the input key if and only if the passed
+	 * version matches the currently stored version. This method is safe in the face
+	 * of concurrent writes. Maximum per-key size is 128KB. (states.update)
+	 *
+	 * @param int                     $stateKey The key for the data to be retrieved.
+	 * @param GoogleGAL_UpdateRequest $postBody
+	 * @param array                   $optParams Optional parameters.
+	 *
+	 * @opt_param string currentStateVersion The version of the app state your
+	 * application is attempting to update. If this does not match the current
+	 * version, this method will return a conflict error. If there is no data stored
+	 * on the server for this key, the update will succeed irrespective of the value
+	 * of this parameter.
+	 * @return GoogleGAL_Service_AppState_WriteResult
+	 */
+	public function update( $stateKey, GoogleGAL_Service_AppState_UpdateRequest $postBody, $optParams = array() ) {
+		$params = array(
+			'stateKey' => $stateKey,
+			'postBody' => $postBody,
+		);
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'update', array( $params ), 'GoogleGAL_Service_AppState_WriteResult' );
+	}
 }
 
 
 
 
-class GoogleGAL_Service_AppState_GetResponse extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $currentStateVersion;
-  public $data;
-  public $kind;
-  public $stateKey;
+class GoogleGAL_Service_AppState_GetResponse extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $currentStateVersion;
+	public $data;
+	public $kind;
+	public $stateKey;
 
 
-  public function setCurrentStateVersion($currentStateVersion)
-  {
-    $this->currentStateVersion = $currentStateVersion;
-  }
-  public function getCurrentStateVersion()
-  {
-    return $this->currentStateVersion;
-  }
-  public function setData($data)
-  {
-    $this->data = $data;
-  }
-  public function getData()
-  {
-    return $this->data;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setStateKey($stateKey)
-  {
-    $this->stateKey = $stateKey;
-  }
-  public function getStateKey()
-  {
-    return $this->stateKey;
-  }
+	public function setCurrentStateVersion( $currentStateVersion ) {
+		$this->currentStateVersion = $currentStateVersion;
+	}
+	public function getCurrentStateVersion() {
+		return $this->currentStateVersion;
+	}
+	public function setData( $data ) {
+		$this->data = $data;
+	}
+	public function getData() {
+		return $this->data;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setStateKey( $stateKey ) {
+		$this->stateKey = $stateKey;
+	}
+	public function getStateKey() {
+		return $this->stateKey;
+	}
 }
 
-class GoogleGAL_Service_AppState_ListResponse extends GoogleGAL_Collection
-{
-  protected $collection_key = 'items';
-  protected $internal_gapi_mappings = array(
-  );
-  protected $itemsType = 'GoogleGAL_Service_AppState_GetResponse';
-  protected $itemsDataType = 'array';
-  public $kind;
-  public $maximumKeyCount;
+class GoogleGAL_Service_AppState_ListResponse extends GoogleGAL_Collection {
+
+	protected $collection_key         = 'items';
+	protected $internal_gapi_mappings = array();
+	protected $itemsType              = 'GoogleGAL_Service_AppState_GetResponse';
+	protected $itemsDataType          = 'array';
+	public $kind;
+	public $maximumKeyCount;
 
 
-  public function setItems($items)
-  {
-    $this->items = $items;
-  }
-  public function getItems()
-  {
-    return $this->items;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setMaximumKeyCount($maximumKeyCount)
-  {
-    $this->maximumKeyCount = $maximumKeyCount;
-  }
-  public function getMaximumKeyCount()
-  {
-    return $this->maximumKeyCount;
-  }
+	public function setItems( $items ) {
+		$this->items = $items;
+	}
+	public function getItems() {
+		return $this->items;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setMaximumKeyCount( $maximumKeyCount ) {
+		$this->maximumKeyCount = $maximumKeyCount;
+	}
+	public function getMaximumKeyCount() {
+		return $this->maximumKeyCount;
+	}
 }
 
-class GoogleGAL_Service_AppState_UpdateRequest extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $data;
-  public $kind;
+class GoogleGAL_Service_AppState_UpdateRequest extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $data;
+	public $kind;
 
 
-  public function setData($data)
-  {
-    $this->data = $data;
-  }
-  public function getData()
-  {
-    return $this->data;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
+	public function setData( $data ) {
+		$this->data = $data;
+	}
+	public function getData() {
+		return $this->data;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
 }
 
-class GoogleGAL_Service_AppState_WriteResult extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $currentStateVersion;
-  public $kind;
-  public $stateKey;
+class GoogleGAL_Service_AppState_WriteResult extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $currentStateVersion;
+	public $kind;
+	public $stateKey;
 
 
-  public function setCurrentStateVersion($currentStateVersion)
-  {
-    $this->currentStateVersion = $currentStateVersion;
-  }
-  public function getCurrentStateVersion()
-  {
-    return $this->currentStateVersion;
-  }
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setStateKey($stateKey)
-  {
-    $this->stateKey = $stateKey;
-  }
-  public function getStateKey()
-  {
-    return $this->stateKey;
-  }
+	public function setCurrentStateVersion( $currentStateVersion ) {
+		$this->currentStateVersion = $currentStateVersion;
+	}
+	public function getCurrentStateVersion() {
+		return $this->currentStateVersion;
+	}
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setStateKey( $stateKey ) {
+		$this->stateKey = $stateKey;
+	}
+	public function getStateKey() {
+		return $this->stateKey;
+	}
 }

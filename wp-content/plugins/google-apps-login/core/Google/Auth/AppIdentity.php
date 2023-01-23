@@ -22,84 +22,80 @@
  */
 use google\appengine\api\app_identity\AppIdentityService;
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * Authentication via the Google App Engine App Identity service.
  */
-class GoogleGAL_Auth_AppIdentity extends GoogleGAL_Auth_Abstract
-{
-  const CACHE_PREFIX = "GoogleGAL_Auth_AppIdentity::";
-  private $key = null;
-  private $client;
-  private $token = false;
-  private $tokenScopes = false;
+class GoogleGAL_Auth_AppIdentity extends GoogleGAL_Auth_Abstract {
 
-  public function __construct(GoogleGAL_Client $client, $config = null)
-  {
-    $this->client = $client;
-  }
+	const CACHE_PREFIX = 'GoogleGAL_Auth_AppIdentity::';
+	private $key       = null;
+	private $client;
+	private $token       = false;
+	private $tokenScopes = false;
 
-  /**
-   * Retrieve an access token for the scopes supplied.
-   */
-  public function authenticateForScope($scopes)
-  {
-    if ($this->token && $this->tokenScopes == $scopes) {
-      return $this->token;
-    }
+	public function __construct( GoogleGAL_Client $client, $config = null ) {
+		$this->client = $client;
+	}
 
-    $cacheKey = self::CACHE_PREFIX;
-    if (is_string($scopes)) {
-      $cacheKey .= $scopes;
-    } else if (is_array($scopes)) {
-      $cacheKey .= implode(":", $scopes);
-    }
+	/**
+	 * Retrieve an access token for the scopes supplied.
+	 */
+	public function authenticateForScope( $scopes ) {
+		if ( $this->token && $this->tokenScopes == $scopes ) {
+			return $this->token;
+		}
 
-    $this->token = $this->client->getCache()->get($cacheKey);
-    if (!$this->token) {
-      $this->token = AppIdentityService::getAccessToken($scopes);
-      if ($this->token) {
-        $this->client->getCache()->set(
-            $cacheKey,
-            $this->token
-        );
-      }
-    }
-    $this->tokenScopes = $scopes;
-    return $this->token;
-  }
+		$cacheKey = self::CACHE_PREFIX;
+		if ( is_string( $scopes ) ) {
+			$cacheKey .= $scopes;
+		} elseif ( is_array( $scopes ) ) {
+			$cacheKey .= implode( ':', $scopes );
+		}
 
-  /**
-   * Perform an authenticated / signed apiHttpRequest.
-   * This function takes the apiHttpRequest, calls apiAuth->sign on it
-   * (which can modify the request in what ever way fits the auth mechanism)
-   * and then calls apiCurlIO::makeRequest on the signed request
-   *
-   * @param GoogleGAL_Http_Request $request
-   * @return GoogleGAL_Http_Request The resulting HTTP response including the
-   * responseHttpCode, responseHeaders and responseBody.
-   */
-  public function authenticatedRequest(GoogleGAL_Http_Request $request)
-  {
-    $request = $this->sign($request);
-    return $this->client->getIo()->makeRequest($request);
-  }
+		$this->token = $this->client->getCache()->get( $cacheKey );
+		if ( ! $this->token ) {
+			$this->token = AppIdentityService::getAccessToken( $scopes );
+			if ( $this->token ) {
+				$this->client->getCache()->set(
+					$cacheKey,
+					$this->token
+				);
+			}
+		}
+		$this->tokenScopes = $scopes;
+		return $this->token;
+	}
 
-  public function sign(GoogleGAL_Http_Request $request)
-  {
-    if (!$this->token) {
-      // No token, so nothing to do.
-      return $request;
-    }
+	/**
+	 * Perform an authenticated / signed apiHttpRequest.
+	 * This function takes the apiHttpRequest, calls apiAuth->sign on it
+	 * (which can modify the request in what ever way fits the auth mechanism)
+	 * and then calls apiCurlIO::makeRequest on the signed request
+	 *
+	 * @param GoogleGAL_Http_Request $request
+	 * @return GoogleGAL_Http_Request The resulting HTTP response including the
+	 * responseHttpCode, responseHeaders and responseBody.
+	 */
+	public function authenticatedRequest( GoogleGAL_Http_Request $request ) {
+		$request = $this->sign( $request );
+		return $this->client->getIo()->makeRequest( $request );
+	}
 
-    $this->client->getLogger()->debug('App Identity authentication');
+	public function sign( GoogleGAL_Http_Request $request ) {
+		if ( ! $this->token ) {
+			// No token, so nothing to do.
+			return $request;
+		}
 
-    // Add the OAuth2 header to the request
-    $request->setRequestHeaders(
-        array('Authorization' => 'Bearer ' . $this->token['access_token'])
-    );
+		$this->client->getLogger()->debug( 'App Identity authentication' );
 
-    return $request;
-  }
+		// Add the OAuth2 header to the request
+		$request->setRequestHeaders(
+			array( 'Authorization' => 'Bearer ' . $this->token['access_token'] )
+		);
+
+		return $request;
+	}
 }

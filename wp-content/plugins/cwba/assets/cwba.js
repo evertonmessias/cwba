@@ -1,4 +1,10 @@
-window.onload = function () {    
+window.onload = function () {
+    
+    $('#access').DataTable( {
+        "ordering": false,
+        pageLength : 25,
+      } );
+    
     var url = window.location.href;    
     var teste = /informacoes/.test(url);
     /* CSS

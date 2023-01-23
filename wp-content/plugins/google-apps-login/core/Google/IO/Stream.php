@@ -21,210 +21,206 @@
  * @author Stuart Langley <slangley@google.com>
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
-class GoogleGAL_IO_Stream extends GoogleGAL_IO_Abstract
-{
-  const TIMEOUT = "timeout";
-  const ZLIB = "compress.zlib://";
-  private $options = array();
-  private $trappedErrorNumber;
-  private $trappedErrorString;
+class GoogleGAL_IO_Stream extends GoogleGAL_IO_Abstract {
 
-  private static $DEFAULT_HTTP_CONTEXT = array(
-    "follow_location" => 0,
-    "ignore_errors" => 1,
-  );
+	const TIMEOUT    = 'timeout';
+	const ZLIB       = 'compress.zlib://';
+	private $options = array();
+	private $trappedErrorNumber;
+	private $trappedErrorString;
 
-  private static $DEFAULT_SSL_CONTEXT = array(
-    "verify_peer" => true,
-  );
+	private static $DEFAULT_HTTP_CONTEXT = array(
+		'follow_location' => 0,
+		'ignore_errors'   => 1,
+	);
 
-  /**
-   * Execute an HTTP Request
-   *
-   * @param GoogleGAL_HttpRequest $request the http request to be executed
-   * @return GoogleGAL_HttpRequest http request with the response http code,
-   * response headers and response body filled in
-   * @throws GoogleGAL_IO_Exception on curl or IO error
-   */
-  public function executeRequest(GoogleGAL_Http_Request $request)
-  {
-    $default_options = stream_context_get_options(stream_context_get_default());
+	private static $DEFAULT_SSL_CONTEXT = array(
+		'verify_peer' => true,
+	);
 
-    $requestHttpContext = array_key_exists('http', $default_options) ?
-        $default_options['http'] : array();
+	/**
+	 * Execute an HTTP Request
+	 *
+	 * @param GoogleGAL_HttpRequest $request the http request to be executed
+	 * @return GoogleGAL_HttpRequest http request with the response http code,
+	 * response headers and response body filled in
+	 * @throws GoogleGAL_IO_Exception on curl or IO error
+	 */
+	public function executeRequest( GoogleGAL_Http_Request $request ) {
+		$default_options = stream_context_get_options( stream_context_get_default() );
 
-    if ($request->getPostBody()) {
-      $requestHttpContext["content"] = $request->getPostBody();
-    }
+		$requestHttpContext = array_key_exists( 'http', $default_options ) ?
+		$default_options['http'] : array();
 
-    $requestHeaders = $request->getRequestHeaders();
-    if ($requestHeaders && is_array($requestHeaders)) {
-      $headers = "";
-      foreach ($requestHeaders as $k => $v) {
-        $headers .= "$k: $v\r\n";
-      }
-      $requestHttpContext["header"] = $headers;
-    }
+		if ( $request->getPostBody() ) {
+			$requestHttpContext['content'] = $request->getPostBody();
+		}
 
-    $requestHttpContext["method"] = $request->getRequestMethod();
-    $requestHttpContext["user_agent"] = $request->getUserAgent();
+		$requestHeaders = $request->getRequestHeaders();
+		if ( $requestHeaders && is_array( $requestHeaders ) ) {
+			$headers = '';
+			foreach ( $requestHeaders as $k => $v ) {
+				$headers .= "$k: $v\r\n";
+			}
+			$requestHttpContext['header'] = $headers;
+		}
 
-    $requestSslContext = array_key_exists('ssl', $default_options) ?
-        $default_options['ssl'] : array();
+		$requestHttpContext['method']     = $request->getRequestMethod();
+		$requestHttpContext['user_agent'] = $request->getUserAgent();
 
-    if (!array_key_exists("cafile", $requestSslContext)) {
-      $requestSslContext["cafile"] = dirname(__FILE__) . '/cacerts.pem';
-    }
+		$requestSslContext = array_key_exists( 'ssl', $default_options ) ?
+		$default_options['ssl'] : array();
 
-    $options = array(
-        "http" => array_merge(
-            self::$DEFAULT_HTTP_CONTEXT,
-            $requestHttpContext
-        ),
-        "ssl" => array_merge(
-            self::$DEFAULT_SSL_CONTEXT,
-            $requestSslContext
-        )
-    );
+		if ( ! array_key_exists( 'cafile', $requestSslContext ) ) {
+			$requestSslContext['cafile'] = dirname( __FILE__ ) . '/cacerts.pem';
+		}
 
-    $context = stream_context_create($options);
+		$options = array(
+			'http' => array_merge(
+				self::$DEFAULT_HTTP_CONTEXT,
+				$requestHttpContext
+			),
+			'ssl'  => array_merge(
+				self::$DEFAULT_SSL_CONTEXT,
+				$requestSslContext
+			),
+		);
 
-    $url = $request->getUrl();
+		$context = stream_context_create( $options );
 
-    if ($request->canGzip()) {
-      $url = self::ZLIB . $url;
-    }
+		$url = $request->getUrl();
 
-    $this->client->getLogger()->debug(
-        'Stream request',
-        array(
-            'url' => $url,
-            'method' => $request->getRequestMethod(),
-            'headers' => $requestHeaders,
-            'body' => $request->getPostBody()
-        )
-    );
+		if ( $request->canGzip() ) {
+			$url = self::ZLIB . $url;
+		}
 
-    // We are trapping any thrown errors in this method only and
-    // throwing an exception.
-    $this->trappedErrorNumber = null;
-    $this->trappedErrorString = null;
+		$this->client->getLogger()->debug(
+			'Stream request',
+			array(
+				'url'     => $url,
+				'method'  => $request->getRequestMethod(),
+				'headers' => $requestHeaders,
+				'body'    => $request->getPostBody(),
+			)
+		);
 
-    // START - error trap.
-    set_error_handler(array($this, 'trapError'));
-    $fh = fopen($url, 'r', false, $context);
-    restore_error_handler();
-    // END - error trap.
+		// We are trapping any thrown errors in this method only and
+		// throwing an exception.
+		$this->trappedErrorNumber = null;
+		$this->trappedErrorString = null;
 
-    if ($this->trappedErrorNumber) {
-      $error = sprintf(
-          "HTTP Error: Unable to connect: '%s'",
-          $this->trappedErrorString
-      );
+		// START - error trap.
+		set_error_handler( array( $this, 'trapError' ) );
+		$fh = fopen( $url, 'r', false, $context );
+		restore_error_handler();
+		// END - error trap.
 
-      $this->client->getLogger()->error('Stream ' . $error);
-      throw new GoogleGAL_IO_Exception($error, $this->trappedErrorNumber);
-    }
+		if ( $this->trappedErrorNumber ) {
+			$error = sprintf(
+				"HTTP Error: Unable to connect: '%s'",
+				$this->trappedErrorString
+			);
 
-    $response_data = false;
-    $respHttpCode = self::UNKNOWN_CODE;
-    if ($fh) {
-      if (isset($this->options[self::TIMEOUT])) {
-        stream_set_timeout($fh, $this->options[self::TIMEOUT]);
-      }
+			$this->client->getLogger()->error( 'Stream ' . $error );
+			throw new GoogleGAL_IO_Exception( $error, $this->trappedErrorNumber );
+		}
 
-      $response_data = stream_get_contents($fh);
-      fclose($fh);
+		$response_data = false;
+		$respHttpCode  = self::UNKNOWN_CODE;
+		if ( $fh ) {
+			if ( isset( $this->options[ self::TIMEOUT ] ) ) {
+				stream_set_timeout( $fh, $this->options[ self::TIMEOUT ] );
+			}
 
-      $respHttpCode = $this->getHttpResponseCode($http_response_header);
-    }
+			$response_data = stream_get_contents( $fh );
+			fclose( $fh );
 
-    if (false === $response_data) {
-      $error = sprintf(
-          "HTTP Error: Unable to connect: '%s'",
-          $respHttpCode
-      );
+			$respHttpCode = $this->getHttpResponseCode( $http_response_header );
+		}
 
-      $this->client->getLogger()->error('Stream ' . $error);
-      throw new GoogleGAL_IO_Exception($error, $respHttpCode);
-    }
+		if ( false === $response_data ) {
+			$error = sprintf(
+				"HTTP Error: Unable to connect: '%s'",
+				$respHttpCode
+			);
 
-    $responseHeaders = $this->getHttpResponseHeaders($http_response_header);
+			$this->client->getLogger()->error( 'Stream ' . $error );
+			throw new GoogleGAL_IO_Exception( $error, $respHttpCode );
+		}
 
-    $this->client->getLogger()->debug(
-        'Stream response',
-        array(
-            'code' => $respHttpCode,
-            'headers' => $responseHeaders,
-            'body' => $response_data,
-        )
-    );
+		$responseHeaders = $this->getHttpResponseHeaders( $http_response_header );
 
-    return array($response_data, $responseHeaders, $respHttpCode);
-  }
+		$this->client->getLogger()->debug(
+			'Stream response',
+			array(
+				'code'    => $respHttpCode,
+				'headers' => $responseHeaders,
+				'body'    => $response_data,
+			)
+		);
 
-  /**
-   * Set options that update the transport implementation's behavior.
-   * @param $options
-   */
-  public function setOptions($options)
-  {
-    $this->options = $options + $this->options;
-  }
+		return array( $response_data, $responseHeaders, $respHttpCode );
+	}
 
-  /**
-   * Method to handle errors, used for error handling around
-   * stream connection methods.
-   */
-  public function trapError($errno, $errstr)
-  {
-    $this->trappedErrorNumber = $errno;
-    $this->trappedErrorString = $errstr;
-  }
+	/**
+	 * Set options that update the transport implementation's behavior.
+	 *
+	 * @param $options
+	 */
+	public function setOptions( $options ) {
+		$this->options = $options + $this->options;
+	}
 
-  /**
-   * Set the maximum request time in seconds.
-   * @param $timeout in seconds
-   */
-  public function setTimeout($timeout)
-  {
-    $this->options[self::TIMEOUT] = $timeout;
-  }
+	/**
+	 * Method to handle errors, used for error handling around
+	 * stream connection methods.
+	 */
+	public function trapError( $errno, $errstr ) {
+		$this->trappedErrorNumber = $errno;
+		$this->trappedErrorString = $errstr;
+	}
 
-  /**
-   * Get the maximum request time in seconds.
-   * @return timeout in seconds
-   */
-  public function getTimeout()
-  {
-    return $this->options[self::TIMEOUT];
-  }
+	/**
+	 * Set the maximum request time in seconds.
+	 *
+	 * @param $timeout in seconds
+	 */
+	public function setTimeout( $timeout ) {
+		$this->options[ self::TIMEOUT ] = $timeout;
+	}
 
-  /**
-   * Test for the presence of a cURL header processing bug
-   *
-   * {@inheritDoc}
-   *
-   * @return boolean
-   */
-  protected function needsQuirk()
-  {
-    return false;
-  }
+	/**
+	 * Get the maximum request time in seconds.
+	 *
+	 * @return timeout in seconds
+	 */
+	public function getTimeout() {
+		return $this->options[ self::TIMEOUT ];
+	}
 
-  protected function getHttpResponseCode($response_headers)
-  {
-    $header_count = count($response_headers);
+	/**
+	 * Test for the presence of a cURL header processing bug
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @return boolean
+	 */
+	protected function needsQuirk() {
+		return false;
+	}
 
-    for ($i = 0; $i < $header_count; $i++) {
-      $header = $response_headers[$i];
-      if (strncasecmp("HTTP", $header, strlen("HTTP")) == 0) {
-        $response = explode(' ', $header);
-        return $response[1];
-      }
-    }
-    return self::UNKNOWN_CODE;
-  }
+	protected function getHttpResponseCode( $response_headers ) {
+		$header_count = count( $response_headers );
+
+		for ( $i = 0; $i < $header_count; $i++ ) {
+			$header = $response_headers[ $i ];
+			if ( strncasecmp( 'HTTP', $header, strlen( 'HTTP' ) ) == 0 ) {
+				$response = explode( ' ', $header );
+				return $response[1];
+			}
+		}
+		return self::UNKNOWN_CODE;
+	}
 }

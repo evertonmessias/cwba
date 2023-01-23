@@ -28,46 +28,45 @@
  *
  * @author Google, Inc.
  */
-class GoogleGAL_Service_GroupsMigration extends GoogleGAL_Service
-{
+class GoogleGAL_Service_GroupsMigration extends GoogleGAL_Service {
 
 
-  public $archive;
-  
 
-  /**
-   * Constructs the internal representation of the GroupsMigration service.
-   *
-   * @param GoogleGAL_Client $client
-   */
-  public function __construct(GoogleGAL_Client $client)
-  {
-    parent::__construct($client);
-    $this->servicePath = 'groups/v1/groups/';
-    $this->version = 'v1';
-    $this->serviceName = 'groupsmigration';
+	public $archive;
 
-    $this->archive = new GoogleGAL_Service_GroupsMigration_Archive_Resource(
-        $this,
-        $this->serviceName,
-        'archive',
-        array(
-          'methods' => array(
-            'insert' => array(
-              'path' => '{groupId}/archive',
-              'httpMethod' => 'POST',
-              'parameters' => array(
-                'groupId' => array(
-                  'location' => 'path',
-                  'type' => 'string',
-                  'required' => true,
-                ),
-              ),
-            ),
-          )
-        )
-    );
-  }
+
+	/**
+	 * Constructs the internal representation of the GroupsMigration service.
+	 *
+	 * @param GoogleGAL_Client $client
+	 */
+	public function __construct( GoogleGAL_Client $client ) {
+		parent::__construct( $client );
+		$this->servicePath = 'groups/v1/groups/';
+		$this->version     = 'v1';
+		$this->serviceName = 'groupsmigration';
+
+		$this->archive = new GoogleGAL_Service_GroupsMigration_Archive_Resource(
+			$this,
+			$this->serviceName,
+			'archive',
+			array(
+				'methods' => array(
+					'insert' => array(
+						'path'       => '{groupId}/archive',
+						'httpMethod' => 'POST',
+						'parameters' => array(
+							'groupId' => array(
+								'location' => 'path',
+								'type'     => 'string',
+								'required' => true,
+							),
+						),
+					),
+				),
+			)
+		);
+	}
 }
 
 
@@ -79,49 +78,43 @@ class GoogleGAL_Service_GroupsMigration extends GoogleGAL_Service
  *   $archive = $groupsmigrationService->archive;
  *  </code>
  */
-class GoogleGAL_Service_GroupsMigration_Archive_Resource extends GoogleGAL_Service_Resource
-{
+class GoogleGAL_Service_GroupsMigration_Archive_Resource extends GoogleGAL_Service_Resource {
 
-  /**
-   * Inserts a new mail into the archive of the Google group. (archive.insert)
-   *
-   * @param string $groupId The group ID
-   * @param array $optParams Optional parameters.
-   * @return GoogleGAL_Service_GroupsMigration_Groups
-   */
-  public function insert($groupId, $optParams = array())
-  {
-    $params = array('groupId' => $groupId);
-    $params = array_merge($params, $optParams);
-    return $this->call('insert', array($params), "GoogleGAL_Service_GroupsMigration_Groups");
-  }
+
+	/**
+	 * Inserts a new mail into the archive of the Google group. (archive.insert)
+	 *
+	 * @param string $groupId The group ID
+	 * @param array  $optParams Optional parameters.
+	 * @return GoogleGAL_Service_GroupsMigration_Groups
+	 */
+	public function insert( $groupId, $optParams = array() ) {
+		$params = array( 'groupId' => $groupId );
+		$params = array_merge( $params, $optParams );
+		return $this->call( 'insert', array( $params ), 'GoogleGAL_Service_GroupsMigration_Groups' );
+	}
 }
 
 
 
 
-class GoogleGAL_Service_GroupsMigration_Groups extends GoogleGAL_Model
-{
-  protected $internal_gapi_mappings = array(
-  );
-  public $kind;
-  public $responseCode;
+class GoogleGAL_Service_GroupsMigration_Groups extends GoogleGAL_Model {
+
+	protected $internal_gapi_mappings = array();
+	public $kind;
+	public $responseCode;
 
 
-  public function setKind($kind)
-  {
-    $this->kind = $kind;
-  }
-  public function getKind()
-  {
-    return $this->kind;
-  }
-  public function setResponseCode($responseCode)
-  {
-    $this->responseCode = $responseCode;
-  }
-  public function getResponseCode()
-  {
-    return $this->responseCode;
-  }
+	public function setKind( $kind ) {
+		$this->kind = $kind;
+	}
+	public function getKind() {
+		return $this->kind;
+	}
+	public function setResponseCode( $responseCode ) {
+		$this->responseCode = $responseCode;
+	}
+	public function getResponseCode() {
+		return $this->responseCode;
+	}
 }

@@ -15,286 +15,283 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * @author Chirag Shah <chirags@google.com>
- *
  */
-class GoogleGAL_Http_MediaFileUpload
-{
-  const UPLOAD_MEDIA_TYPE = 'media';
-  const UPLOAD_MULTIPART_TYPE = 'multipart';
-  const UPLOAD_RESUMABLE_TYPE = 'resumable';
+class GoogleGAL_Http_MediaFileUpload {
 
-  /** @var string $mimeType */
-  private $mimeType;
+	const UPLOAD_MEDIA_TYPE     = 'media';
+	const UPLOAD_MULTIPART_TYPE = 'multipart';
+	const UPLOAD_RESUMABLE_TYPE = 'resumable';
 
-  /** @var string $data */
-  private $data;
+	/** @var string $mimeType */
+	private $mimeType;
 
-  /** @var bool $resumable */
-  private $resumable;
+	/** @var string $data */
+	private $data;
 
-  /** @var int $chunkSize */
-  private $chunkSize;
+	/** @var bool $resumable */
+	private $resumable;
 
-  /** @var int $size */
-  private $size;
+	/** @var int $chunkSize */
+	private $chunkSize;
 
-  /** @var string $resumeUri */
-  private $resumeUri;
+	/** @var int $size */
+	private $size;
 
-  /** @var int $progress */
-  private $progress;
+	/** @var string $resumeUri */
+	private $resumeUri;
 
-  /** @var GoogleGAL_Client */
-  private $client;
+	/** @var int $progress */
+	private $progress;
 
-  /** @var GoogleGAL_Http_Request */
-  private $request;
+	/** @var GoogleGAL_Client */
+	private $client;
 
-  /** @var string */
-  private $boundary;
+	/** @var GoogleGAL_Http_Request */
+	private $request;
 
-  /**
-   * Result code from last HTTP call
-   * @var int
-   */
-  private $httpResultCode;
+	/** @var string */
+	private $boundary;
 
-  /**
-   * @param $mimeType string
-   * @param $data string The bytes you want to upload.
-   * @param $resumable bool
-   * @param bool $chunkSize File will be uploaded in chunks of this many bytes.
-   * only used if resumable=True
-   */
-  public function __construct(
-      GoogleGAL_Client $client,
-      GoogleGAL_Http_Request $request,
-      $mimeType,
-      $data,
-      $resumable = false,
-      $chunkSize = false,
-      $boundary = false
-  ) {
-    $this->client = $client;
-    $this->request = $request;
-    $this->mimeType = $mimeType;
-    $this->data = $data;
-    $this->size = strlen($this->data);
-    $this->resumable = $resumable;
-    if (!$chunkSize) {
-      $chunkSize = 256 * 1024;
-    }
-    $this->chunkSize = $chunkSize;
-    $this->progress = 0;
-    $this->boundary = $boundary;
+	/**
+	 * Result code from last HTTP call
+	 *
+	 * @var int
+	 */
+	private $httpResultCode;
 
-    // Process Media Request
-    $this->process();
-  }
+	/**
+	 * @param $mimeType string
+	 * @param $data string The bytes you want to upload.
+	 * @param $resumable bool
+	 * @param bool                                     $chunkSize File will be uploaded in chunks of this many bytes.
+	 *                                     only used if resumable=True
+	 */
+	public function __construct(
+	  GoogleGAL_Client $client,
+	  GoogleGAL_Http_Request $request,
+	  $mimeType,
+	  $data,
+	  $resumable = false,
+	  $chunkSize = false,
+	  $boundary = false
+	) {
+		$this->client    = $client;
+		$this->request   = $request;
+		$this->mimeType  = $mimeType;
+		$this->data      = $data;
+		$this->size      = strlen( $this->data );
+		$this->resumable = $resumable;
+		if ( ! $chunkSize ) {
+			$chunkSize = 256 * 1024;
+		}
+		$this->chunkSize = $chunkSize;
+		$this->progress  = 0;
+		$this->boundary  = $boundary;
 
-  /**
-   * Set the size of the file that is being uploaded.
-   * @param $size - int file size in bytes
-   */
-  public function setFileSize($size)
-  {
-    $this->size = $size;
-  }
+		// Process Media Request
+		$this->process();
+	}
 
-  /**
-   * Return the progress on the upload
-   * @return int progress in bytes uploaded.
-   */
-  public function getProgress()
-  {
-    return $this->progress;
-  }
+	/**
+	 * Set the size of the file that is being uploaded.
+	 *
+	 * @param $size - int file size in bytes
+	 */
+	public function setFileSize( $size ) {
+		$this->size = $size;
+	}
 
-  /**
-   * Return the HTTP result code from the last call made.
-   * @return int code
-   */
-  public function getHttpResultCode()
-  {
-    return $this->httpResultCode;
-  }
+	/**
+	 * Return the progress on the upload
+	 *
+	 * @return int progress in bytes uploaded.
+	 */
+	public function getProgress() {
+		return $this->progress;
+	}
 
-  /**
-   * Send the next part of the file to upload.
-   * @param [$chunk] the next set of bytes to send. If false will used $data passed
-   * at construct time.
-   */
-  public function nextChunk($chunk = false)
-  {
-    if (false == $this->resumeUri) {
-      $this->resumeUri = $this->getResumeUri();
-    }
+	/**
+	 * Return the HTTP result code from the last call made.
+	 *
+	 * @return int code
+	 */
+	public function getHttpResultCode() {
+		return $this->httpResultCode;
+	}
 
-    if (false == $chunk) {
-      $chunk = substr($this->data, $this->progress, $this->chunkSize);
-    }
+	/**
+	 * Send the next part of the file to upload.
+	 *
+	 * @param [ $chunk] the next set of bytes to send. If false will used $data passed
+	 *  at construct time.
+	 */
+	public function nextChunk( $chunk = false ) {
+		if ( false == $this->resumeUri ) {
+			$this->resumeUri = $this->getResumeUri();
+		}
 
-    $lastBytePos = $this->progress + strlen($chunk) - 1;
-    $headers = array(
-      'content-range' => "bytes $this->progress-$lastBytePos/$this->size",
-      'content-type' => $this->request->getRequestHeader('content-type'),
-      'content-length' => $this->chunkSize,
-      'expect' => '',
-    );
+		if ( false == $chunk ) {
+			$chunk = substr( $this->data, $this->progress, $this->chunkSize );
+		}
 
-    $httpRequest = new GoogleGAL_Http_Request(
-        $this->resumeUri,
-        'PUT',
-        $headers,
-        $chunk
-    );
+		$lastBytePos = $this->progress + strlen( $chunk ) - 1;
+		$headers     = array(
+			'content-range'  => "bytes $this->progress-$lastBytePos/$this->size",
+			'content-type'   => $this->request->getRequestHeader( 'content-type' ),
+			'content-length' => $this->chunkSize,
+			'expect'         => '',
+		);
 
-    if ($this->client->getClassConfig("GoogleGAL_Http_Request", "enable_gzip_for_uploads")) {
-      $httpRequest->enableGzip();
-    } else {
-      $httpRequest->disableGzip();
-    }
+		$httpRequest = new GoogleGAL_Http_Request(
+			$this->resumeUri,
+			'PUT',
+			$headers,
+			$chunk
+		);
 
-    $response = $this->client->getIo()->makeRequest($httpRequest);
-    $response->setExpectedClass($this->request->getExpectedClass());
-    $code = $response->getResponseHttpCode();
-    $this->httpResultCode = $code;
+		if ( $this->client->getClassConfig( 'GoogleGAL_Http_Request', 'enable_gzip_for_uploads' ) ) {
+			$httpRequest->enableGzip();
+		} else {
+			$httpRequest->disableGzip();
+		}
 
-    if (308 == $code) {
-      // Track the amount uploaded.
-      $range = explode('-', $response->getResponseHeader('range'));
-      $this->progress = $range[1] + 1;
+		$response = $this->client->getIo()->makeRequest( $httpRequest );
+		$response->setExpectedClass( $this->request->getExpectedClass() );
+		$code                 = $response->getResponseHttpCode();
+		$this->httpResultCode = $code;
 
-      // Allow for changing upload URLs.
-      $location = $response->getResponseHeader('location');
-      if ($location) {
-        $this->resumeUri = $location;
-      }
+		if ( 308 == $code ) {
+			// Track the amount uploaded.
+			$range          = explode( '-', $response->getResponseHeader( 'range' ) );
+			$this->progress = $range[1] + 1;
 
-      // No problems, but upload not complete.
-      return false;
-    } else {
-      return GoogleGAL_Http_REST::decodeHttpResponse($response, $this->client);
-    }
-  }
+			// Allow for changing upload URLs.
+			$location = $response->getResponseHeader( 'location' );
+			if ( $location ) {
+				$this->resumeUri = $location;
+			}
 
-  /**
-   * @param $meta
-   * @param $params
-   * @return array|bool
-   * @visible for testing
-   */
-  private function process()
-  {
-    $postBody = false;
-    $contentType = false;
+			// No problems, but upload not complete.
+			return false;
+		} else {
+			return GoogleGAL_Http_REST::decodeHttpResponse( $response, $this->client );
+		}
+	}
 
-    $meta = $this->request->getPostBody();
-    $meta = is_string($meta) ? json_decode($meta, true) : $meta;
+	/**
+	 * @param $meta
+	 * @param $params
+	 * @return array|bool
+	 * @visible for testing
+	 */
+	private function process() {
+		$postBody    = false;
+		$contentType = false;
 
-    $uploadType = $this->getUploadType($meta);
-    $this->request->setQueryParam('uploadType', $uploadType);
-    $this->transformToUploadUrl();
-    $mimeType = $this->mimeType ?
-        $this->mimeType :
-        $this->request->getRequestHeader('content-type');
+		$meta = $this->request->getPostBody();
+		$meta = is_string( $meta ) ? json_decode( $meta, true ) : $meta;
 
-    if (self::UPLOAD_RESUMABLE_TYPE == $uploadType) {
-      $contentType = $mimeType;
-      $postBody = is_string($meta) ? $meta : json_encode($meta);
-    } else if (self::UPLOAD_MEDIA_TYPE == $uploadType) {
-      $contentType = $mimeType;
-      $postBody = $this->data;
-    } else if (self::UPLOAD_MULTIPART_TYPE == $uploadType) {
-      // This is a multipart/related upload.
-      $boundary = $this->boundary ? $this->boundary : mt_rand();
-      $boundary = str_replace('"', '', $boundary);
-      $contentType = 'multipart/related; boundary=' . $boundary;
-      $related = "--$boundary\r\n";
-      $related .= "Content-Type: application/json; charset=UTF-8\r\n";
-      $related .= "\r\n" . json_encode($meta) . "\r\n";
-      $related .= "--$boundary\r\n";
-      $related .= "Content-Type: $mimeType\r\n";
-      $related .= "Content-Transfer-Encoding: base64\r\n";
-      $related .= "\r\n" . base64_encode($this->data) . "\r\n";
-      $related .= "--$boundary--";
-      $postBody = $related;
-    }
+		$uploadType = $this->getUploadType( $meta );
+		$this->request->setQueryParam( 'uploadType', $uploadType );
+		$this->transformToUploadUrl();
+		$mimeType = $this->mimeType ?
+		$this->mimeType :
+		$this->request->getRequestHeader( 'content-type' );
 
-    $this->request->setPostBody($postBody);
+		if ( self::UPLOAD_RESUMABLE_TYPE == $uploadType ) {
+			$contentType = $mimeType;
+			$postBody    = is_string( $meta ) ? $meta : json_encode( $meta );
+		} elseif ( self::UPLOAD_MEDIA_TYPE == $uploadType ) {
+			$contentType = $mimeType;
+			$postBody    = $this->data;
+		} elseif ( self::UPLOAD_MULTIPART_TYPE == $uploadType ) {
+			// This is a multipart/related upload.
+			$boundary    = $this->boundary ? $this->boundary : mt_rand();
+			$boundary    = str_replace( '"', '', $boundary );
+			$contentType = 'multipart/related; boundary=' . $boundary;
+			$related     = "--$boundary\r\n";
+			$related    .= "Content-Type: application/json; charset=UTF-8\r\n";
+			$related    .= "\r\n" . json_encode( $meta ) . "\r\n";
+			$related    .= "--$boundary\r\n";
+			$related    .= "Content-Type: $mimeType\r\n";
+			$related    .= "Content-Transfer-Encoding: base64\r\n";
+			$related    .= "\r\n" . base64_encode( $this->data ) . "\r\n";
+			$related    .= "--$boundary--";
+			$postBody    = $related;
+		}
 
-    if (isset($contentType) && $contentType) {
-      $contentTypeHeader['content-type'] = $contentType;
-      $this->request->setRequestHeaders($contentTypeHeader);
-    }
-  }
+		$this->request->setPostBody( $postBody );
 
-  private function transformToUploadUrl()
-  {
-    $base = $this->request->getBaseComponent();
-    $this->request->setBaseComponent($base . '/upload');
-  }
+		if ( isset( $contentType ) && $contentType ) {
+			$contentTypeHeader['content-type'] = $contentType;
+			$this->request->setRequestHeaders( $contentTypeHeader );
+		}
+	}
 
-  /**
-   * Valid upload types:
-   * - resumable (UPLOAD_RESUMABLE_TYPE)
-   * - media (UPLOAD_MEDIA_TYPE)
-   * - multipart (UPLOAD_MULTIPART_TYPE)
-   * @param $meta
-   * @return string
-   * @visible for testing
-   */
-  public function getUploadType($meta)
-  {
-    if ($this->resumable) {
-      return self::UPLOAD_RESUMABLE_TYPE;
-    }
+	private function transformToUploadUrl() {
+		$base = $this->request->getBaseComponent();
+		$this->request->setBaseComponent( $base . '/upload' );
+	}
 
-    if (false == $meta && $this->data) {
-      return self::UPLOAD_MEDIA_TYPE;
-    }
+	/**
+	 * Valid upload types:
+	 * - resumable (UPLOAD_RESUMABLE_TYPE)
+	 * - media (UPLOAD_MEDIA_TYPE)
+	 * - multipart (UPLOAD_MULTIPART_TYPE)
+	 *
+	 * @param $meta
+	 * @return string
+	 * @visible for testing
+	 */
+	public function getUploadType( $meta ) {
+		if ( $this->resumable ) {
+			return self::UPLOAD_RESUMABLE_TYPE;
+		}
 
-    return self::UPLOAD_MULTIPART_TYPE;
-  }
+		if ( false == $meta && $this->data ) {
+			return self::UPLOAD_MEDIA_TYPE;
+		}
 
-  private function getResumeUri()
-  {
-    $result = null;
-    $body = $this->request->getPostBody();
-    if ($body) {
-      $headers = array(
-        'content-type' => 'application/json; charset=UTF-8',
-        'content-length' => GoogleGAL_Utils::getStrLen($body),
-        'x-upload-content-type' => $this->mimeType,
-        'x-upload-content-length' => $this->size,
-        'expect' => '',
-      );
-      $this->request->setRequestHeaders($headers);
-    }
+		return self::UPLOAD_MULTIPART_TYPE;
+	}
 
-    $response = $this->client->getIo()->makeRequest($this->request);
-    $location = $response->getResponseHeader('location');
-    $code = $response->getResponseHttpCode();
+	private function getResumeUri() {
+		$result = null;
+		$body   = $this->request->getPostBody();
+		if ( $body ) {
+			$headers = array(
+				'content-type'            => 'application/json; charset=UTF-8',
+				'content-length'          => GoogleGAL_Utils::getStrLen( $body ),
+				'x-upload-content-type'   => $this->mimeType,
+				'x-upload-content-length' => $this->size,
+				'expect'                  => '',
+			);
+			$this->request->setRequestHeaders( $headers );
+		}
 
-    if (200 == $code && true == $location) {
-      return $location;
-    }
-    $message = $code;
-    $body = @json_decode($response->getResponseBody());
-    if (!empty( $body->error->errors ) ) {
-      $message .= ': ';
-      foreach ($body->error->errors as $error) {
-        $message .= "{$error->domain}, {$error->message};";
-      }
-      $message = rtrim($message, ';');
-    }
+		$response = $this->client->getIo()->makeRequest( $this->request );
+		$location = $response->getResponseHeader( 'location' );
+		$code     = $response->getResponseHttpCode();
 
-    $error = "Failed to start the resumable upload (HTTP {$message})";
-    $this->client->getLogger()->error($error);
-    throw new GoogleGAL_Exception($error);
-  }
+		if ( 200 == $code && true == $location ) {
+			return $location;
+		}
+		$message = $code;
+		$body    = @json_decode( $response->getResponseBody() );
+		if ( ! empty( $body->error->errors ) ) {
+			$message .= ': ';
+			foreach ( $body->error->errors as $error ) {
+				$message .= "{$error->domain}, {$error->message};";
+			}
+			$message = rtrim( $message, ';' );
+		}
+
+		$error = "Failed to start the resumable upload (HTTP {$message})";
+		$this->client->getLogger()->error( $error );
+		throw new GoogleGAL_Exception( $error );
+	}
 }

@@ -7,10 +7,16 @@ function style_and_script()
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 	<link rel='stylesheet' href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+
 	<link href="<?php echo SITEPATH; ?>assets/vendor/remixicon/remixicon.css" rel="stylesheet">
 
 <?php
@@ -68,6 +74,8 @@ add_action('admin_menu', 'wd_admin_menu_rename');
 function menu_cwba()
 {
 	add_menu_page('CWBA', 'CWBA', 'edit_posts', 'cwba', 'function_about', 'dashicons-welcome-view-site', 1);
+	add_submenu_page('cwba', 'Acessos','Acessos', 'edit_posts', 'acess', 'function_access', 1);
+	add_submenu_page('cwba', 'Login','Login', 'edit_posts', 'login', 'function_login', 2);
 }
 add_action('admin_menu', 'menu_cwba');
 
@@ -77,6 +85,20 @@ function function_about()
 	include ABSPATH . '/wp-content/plugins/cwba/includes/about.php';
 }
 add_action('function_about', 'function_about');
+
+// ***************** Add About
+function function_access()
+{
+	include ABSPATH . '/wp-content/plugins/cwba/includes/access.php';
+}
+add_action('function_access', 'function_access');
+
+// ***************** Add About
+function function_login()
+{
+	include ABSPATH . '/wp-content/plugins/cwba/includes/login.php';
+}
+add_action('function_login', 'function_login');
 
 // ***************** Add Media
 function load_media_files()
@@ -102,12 +124,26 @@ function registerdb($ip) // register in db
 	}
 }
 add_action('registerdb', 'registerdb');
-function list_access($item) // list access
+
+function registerdb2($user,$ip) // register in db
+{	
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'login';
+	$resp = $wpdb->insert($table_name, array('user' => $user,'ipadress' => $ip, 'time' => current_time('mysql')));
+	if ($resp == 1) {
+		return "register db: SUCESS";
+	} else {
+		return "register db: ERROR";
+	}
+}
+add_action('registerdb2', 'registerdb2');
+
+function list_access($table) // list access
 {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'access';
+	$table_name = $wpdb->prefix . $table;
 	$results = $wpdb->get_results(
-		"SELECT $item FROM $table_name"
+		"SELECT * FROM $table_name ORDER BY id DESC"
 	);
 	return $results;
 }

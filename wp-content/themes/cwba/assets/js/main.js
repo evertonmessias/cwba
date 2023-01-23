@@ -297,3 +297,13 @@
   $('.venobox').venobox();
   
 })()
+
+function sanfona(x) {
+  if (!$('.bloco' + x).is(":visible")) {         
+      $('.bloco').slideUp(100);           
+      $('.bloco' + x).slideDown(100);
+      $('html, body').animate({scrollTop : 800 + (x * 100)},100);
+  }else {      
+      $('.bloco' + x).slideUp(100);             
+  }    
+}

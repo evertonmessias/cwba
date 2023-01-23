@@ -15,127 +15,123 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * @author Chirag Shah <chirags@google.com>
  */
-class GoogleGAL_Http_Batch
-{
-  /** @var string Multipart Boundary. */
-  private $boundary;
+class GoogleGAL_Http_Batch {
 
-  /** @var array service requests to be executed. */
-  private $requests = array();
+	/** @var string Multipart Boundary. */
+	private $boundary;
 
-  /** @var GoogleGAL_Client */
-  private $client;
+	/** @var array service requests to be executed. */
+	private $requests = array();
 
-  private $expected_classes = array();
+	/** @var GoogleGAL_Client */
+	private $client;
 
-  private $base_path;
+	private $expected_classes = array();
 
-  public function __construct(GoogleGAL_Client $client, $boundary = false)
-  {
-    $this->client = $client;
-    $this->base_path = $this->client->getBasePath();
-    $this->expected_classes = array();
-    $boundary = (false == $boundary) ? mt_rand() : $boundary;
-    $this->boundary = str_replace('"', '', $boundary);
-  }
+	private $base_path;
 
-  public function add(GoogleGAL_Http_Request $request, $key = false)
-  {
-    if (false == $key) {
-      $key = mt_rand();
-    }
+	public function __construct( GoogleGAL_Client $client, $boundary = false ) {
+		$this->client           = $client;
+		$this->base_path        = $this->client->getBasePath();
+		$this->expected_classes = array();
+		$boundary               = ( false == $boundary ) ? mt_rand() : $boundary;
+		$this->boundary         = str_replace( '"', '', $boundary );
+	}
 
-    $this->requests[$key] = $request;
-  }
+	public function add( GoogleGAL_Http_Request $request, $key = false ) {
+		if ( false == $key ) {
+			$key = mt_rand();
+		}
 
-  public function execute()
-  {
-    $body = '';
+		$this->requests[ $key ] = $request;
+	}
 
-    /** @var GoogleGAL_Http_Request $req */
-    foreach ($this->requests as $key => $req) {
-      $body .= "--{$this->boundary}\n";
-      $body .= $req->toBatchString($key) . "\n";
-      $this->expected_classes["response-" . $key] = $req->getExpectedClass();
-    }
+	public function execute() {
+		$body = '';
 
-    $body = rtrim($body);
-    $body .= "\n--{$this->boundary}--";
+		/** @var GoogleGAL_Http_Request $req */
+		foreach ( $this->requests as $key => $req ) {
+			$body                                        .= "--{$this->boundary}\n";
+			$body                                        .= $req->toBatchString( $key ) . "\n";
+			$this->expected_classes[ 'response-' . $key ] = $req->getExpectedClass();
+		}
 
-    $url = $this->base_path . '/batch';
-    $httpRequest = new GoogleGAL_Http_Request($url, 'POST');
-    $httpRequest->setRequestHeaders(
-        array('Content-Type' => 'multipart/mixed; boundary=' . $this->boundary)
-    );
+		$body  = rtrim( $body );
+		$body .= "\n--{$this->boundary}--";
 
-    $httpRequest->setPostBody($body);
-    $response = $this->client->getIo()->makeRequest($httpRequest);
+		$url         = $this->base_path . '/batch';
+		$httpRequest = new GoogleGAL_Http_Request( $url, 'POST' );
+		$httpRequest->setRequestHeaders(
+			array( 'Content-Type' => 'multipart/mixed; boundary=' . $this->boundary )
+		);
 
-    return $this->parseResponse($response);
-  }
+		$httpRequest->setPostBody( $body );
+		$response = $this->client->getIo()->makeRequest( $httpRequest );
 
-  public function parseResponse(GoogleGAL_Http_Request $response)
-  {
-    $contentType = $response->getResponseHeader('content-type');
-    $contentType = explode(';', $contentType);
-    $boundary = false;
-    foreach ($contentType as $part) {
-      $part = (explode('=', $part, 2));
-      if (isset($part[0]) && 'boundary' == trim($part[0])) {
-        $boundary = $part[1];
-      }
-    }
+		return $this->parseResponse( $response );
+	}
 
-    $body = $response->getResponseBody();
-    if ($body) {
-      $body = str_replace("--$boundary--", "--$boundary", $body);
-      $parts = explode("--$boundary", $body);
-      $responses = array();
+	public function parseResponse( GoogleGAL_Http_Request $response ) {
+		$contentType = $response->getResponseHeader( 'content-type' );
+		$contentType = explode( ';', $contentType );
+		$boundary    = false;
+		foreach ( $contentType as $part ) {
+			$part = ( explode( '=', $part, 2 ) );
+			if ( isset( $part[0] ) && 'boundary' == trim( $part[0] ) ) {
+				$boundary = $part[1];
+			}
+		}
 
-      foreach ($parts as $part) {
-        $part = trim($part);
-        if (!empty($part)) {
-          list($metaHeaders, $part) = explode("\r\n\r\n", $part, 2);
-          $metaHeaders = $this->client->getIo()->getHttpResponseHeaders($metaHeaders);
+		$body = $response->getResponseBody();
+		if ( $body ) {
+			$body      = str_replace( "--$boundary--", "--$boundary", $body );
+			$parts     = explode( "--$boundary", $body );
+			$responses = array();
 
-          $status = substr($part, 0, strpos($part, "\n"));
-          $status = explode(" ", $status);
-          $status = $status[1];
+			foreach ( $parts as $part ) {
+				$part = trim( $part );
+				if ( ! empty( $part ) ) {
+					list($metaHeaders, $part) = explode( "\r\n\r\n", $part, 2 );
+					$metaHeaders              = $this->client->getIo()->getHttpResponseHeaders( $metaHeaders );
 
-          list($partHeaders, $partBody) = $this->client->getIo()->ParseHttpResponse($part, false);
-          $response = new GoogleGAL_Http_Request("");
-          $response->setResponseHttpCode($status);
-          $response->setResponseHeaders($partHeaders);
-          $response->setResponseBody($partBody);
+					$status = substr( $part, 0, strpos( $part, "\n" ) );
+					$status = explode( ' ', $status );
+					$status = $status[1];
 
-          // Need content id.
-          $key = $metaHeaders['content-id'];
+					list($partHeaders, $partBody) = $this->client->getIo()->ParseHttpResponse( $part, false );
+					$response                     = new GoogleGAL_Http_Request( '' );
+					$response->setResponseHttpCode( $status );
+					$response->setResponseHeaders( $partHeaders );
+					$response->setResponseBody( $partBody );
 
-          if (isset($this->expected_classes[$key]) &&
-              strlen($this->expected_classes[$key]) > 0) {
-            $class = $this->expected_classes[$key];
-            $response->setExpectedClass($class);
-          }
+					// Need content id.
+					$key = $metaHeaders['content-id'];
 
-          try {
-            $response = GoogleGAL_Http_REST::decodeHttpResponse($response, $this->client);
-            $responses[$key] = $response;
-          } catch (GoogleGAL_Service_Exception $e) {
-            // Store the exception as the response, so successful responses
-            // can be processed.
-            $responses[$key] = $e;
-          }
-        }
-      }
+					if ( isset( $this->expected_classes[ $key ] ) &&
+					  strlen( $this->expected_classes[ $key ] ) > 0 ) {
+						$class = $this->expected_classes[ $key ];
+						$response->setExpectedClass( $class );
+					}
 
-      return $responses;
-    }
+					try {
+						$response          = GoogleGAL_Http_REST::decodeHttpResponse( $response, $this->client );
+						$responses[ $key ] = $response;
+					} catch ( GoogleGAL_Service_Exception $e ) {
+						// Store the exception as the response, so successful responses
+						// can be processed.
+						$responses[ $key ] = $e;
+					}
+				}
+			}
 
-    return null;
-  }
+			return $responses;
+		}
+
+		return null;
+	}
 }

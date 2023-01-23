@@ -6,7 +6,7 @@
     position: relative;
     margin: 0 auto;
     width: 99%;
-    min-height: 500px;
+    min-height: 200px;
     border: 1px solid #888;
     margin-top: 15px;
     margin-left: -5px;
@@ -64,17 +64,9 @@
     width: 100%;
 }
 
-table.access {
-    width: 50%;
-    border-spacing: 0;
-}
-table.access th{
-    background-color: #ccc;
-}
-table.access th,
-table.access td {
-    border: 1px solid #555;
-    padding: 3px;
+table#access th{
+    background-color: #1D2327;
+    color: #fff;
 }
 
 .postmeta-post{

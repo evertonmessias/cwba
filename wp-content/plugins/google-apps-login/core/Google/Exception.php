@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-class GoogleGAL_Exception extends Exception
-{
+class GoogleGAL_Exception extends Exception {
+
 }

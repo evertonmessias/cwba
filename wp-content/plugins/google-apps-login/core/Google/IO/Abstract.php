@@ -19,311 +19,310 @@
  * Abstract IO base class
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
-abstract class GoogleGAL_IO_Abstract
-{
-  const UNKNOWN_CODE = 0;
-  const FORM_URLENCODED = 'application/x-www-form-urlencoded';
-  private static $CONNECTION_ESTABLISHED_HEADERS = array(
-    "HTTP/1.0 200 Connection established\r\n\r\n",
-    "HTTP/1.1 200 Connection established\r\n\r\n",
-  );
-  private static $ENTITY_HTTP_METHODS = array("POST" => null, "PUT" => null);
+abstract class GoogleGAL_IO_Abstract {
 
-  /** @var GoogleGAL_Client */
-  protected $client;
+	const UNKNOWN_CODE                             = 0;
+	const FORM_URLENCODED                          = 'application/x-www-form-urlencoded';
+	private static $CONNECTION_ESTABLISHED_HEADERS = array(
+		"HTTP/1.0 200 Connection established\r\n\r\n",
+		"HTTP/1.1 200 Connection established\r\n\r\n",
+	);
+	private static $ENTITY_HTTP_METHODS            = array(
+		'POST' => null,
+		'PUT'  => null,
+	);
 
-  public function __construct(GoogleGAL_Client $client)
-  {
-    $this->client = $client;
-    $timeout = $client->getClassConfig('GoogleGAL_IO_Abstract', 'request_timeout_seconds');
-    if ($timeout > 0) {
-      $this->setTimeout($timeout);
-    }
-  }
+	/** @var GoogleGAL_Client */
+	protected $client;
 
-  /**
-   * Executes a GoogleGAL_Http_Request and returns the resulting populated GoogleGAL_Http_Request
-   * @param GoogleGAL_Http_Request $request
-   * @return GoogleGAL_Http_Request $request
-   */
-  abstract public function executeRequest(GoogleGAL_Http_Request $request);
+	public function __construct( GoogleGAL_Client $client ) {
+		$this->client = $client;
+		$timeout      = $client->getClassConfig( 'GoogleGAL_IO_Abstract', 'request_timeout_seconds' );
+		if ( $timeout > 0 ) {
+			$this->setTimeout( $timeout );
+		}
+	}
 
-  /**
-   * Set options that update the transport implementation's behavior.
-   * @param $options
-   */
-  abstract public function setOptions($options);
-  
-  /**
-   * Set the maximum request time in seconds.
-   * @param $timeout in seconds
-   */
-  abstract public function setTimeout($timeout);
-  
-  /**
-   * Get the maximum request time in seconds.
-   * @return timeout in seconds
-   */
-  abstract public function getTimeout();
+	/**
+	 * Executes a GoogleGAL_Http_Request and returns the resulting populated GoogleGAL_Http_Request
+	 *
+	 * @param GoogleGAL_Http_Request $request
+	 * @return GoogleGAL_Http_Request $request
+	 */
+	abstract public function executeRequest( GoogleGAL_Http_Request $request);
 
-  /**
-   * Test for the presence of a cURL header processing bug
-   *
-   * The cURL bug was present in versions prior to 7.30.0 and caused the header
-   * length to be miscalculated when a "Connection established" header added by
-   * some proxies was present.
-   *
-   * @return boolean
-   */
-  abstract protected function needsQuirk();
+	/**
+	 * Set options that update the transport implementation's behavior.
+	 *
+	 * @param $options
+	 */
+	abstract public function setOptions( $options);
 
-  /**
-   * @visible for testing.
-   * Cache the response to an HTTP request if it is cacheable.
-   * @param GoogleGAL_Http_Request $request
-   * @return bool Returns true if the insertion was successful.
-   * Otherwise, return false.
-   */
-  public function setCachedRequest(GoogleGAL_Http_Request $request)
-  {
-    // Determine if the request is cacheable.
-    if (GoogleGAL_Http_CacheParser::isResponseCacheable($request)) {
-      $this->client->getCache()->set($request->getCacheKey(), $request);
-      return true;
-    }
+	/**
+	 * Set the maximum request time in seconds.
+	 *
+	 * @param $timeout in seconds
+	 */
+	abstract public function setTimeout( $timeout);
 
-    return false;
-  }
-  
-  /**
-   * Execute an HTTP Request
-   *
-   * @param GoogleGAL_HttpRequest $request the http request to be executed
-   * @return GoogleGAL_HttpRequest http request with the response http code,
-   * response headers and response body filled in
-   * @throws GoogleGAL_IO_Exception on curl or IO error
-   */
-  public function makeRequest(GoogleGAL_Http_Request $request)
-  {
-    // First, check to see if we have a valid cached version.
-    $cached = $this->getCachedRequest($request);
-    if ($cached !== false && $cached instanceof GoogleGAL_Http_Request) {
-      if (!$this->checkMustRevalidateCachedRequest($cached, $request)) {
-        return $cached;
-      }
-    }
+	/**
+	 * Get the maximum request time in seconds.
+	 *
+	 * @return timeout in seconds
+	 */
+	abstract public function getTimeout();
 
-    if (array_key_exists($request->getRequestMethod(), self::$ENTITY_HTTP_METHODS)) {
-      $request = $this->processEntityRequest($request);
-    }
+	/**
+	 * Test for the presence of a cURL header processing bug
+	 *
+	 * The cURL bug was present in versions prior to 7.30.0 and caused the header
+	 * length to be miscalculated when a "Connection established" header added by
+	 * some proxies was present.
+	 *
+	 * @return boolean
+	 */
+	abstract protected function needsQuirk();
 
-    list($responseData, $responseHeaders, $respHttpCode) = $this->executeRequest($request);
+	/**
+	 * @visible for testing.
+	 * Cache the response to an HTTP request if it is cacheable.
+	 * @param GoogleGAL_Http_Request $request
+	 * @return bool Returns true if the insertion was successful.
+	 * Otherwise, return false.
+	 */
+	public function setCachedRequest( GoogleGAL_Http_Request $request ) {
+		// Determine if the request is cacheable.
+		if ( GoogleGAL_Http_CacheParser::isResponseCacheable( $request ) ) {
+			$this->client->getCache()->set( $request->getCacheKey(), $request );
+			return true;
+		}
 
-    if ($respHttpCode == 304 && $cached) {
-      // If the server responded NOT_MODIFIED, return the cached request.
-      $this->updateCachedRequest($cached, $responseHeaders);
-      return $cached;
-    }
+		return false;
+	}
 
-    if (!isset($responseHeaders['Date']) && !isset($responseHeaders['date'])) {
-      $responseHeaders['Date'] = date("r");
-    }
+	/**
+	 * Execute an HTTP Request
+	 *
+	 * @param GoogleGAL_HttpRequest $request the http request to be executed
+	 * @return GoogleGAL_HttpRequest http request with the response http code,
+	 * response headers and response body filled in
+	 * @throws GoogleGAL_IO_Exception on curl or IO error
+	 */
+	public function makeRequest( GoogleGAL_Http_Request $request ) {
+		// First, check to see if we have a valid cached version.
+		$cached = $this->getCachedRequest( $request );
+		if ( $cached !== false && $cached instanceof GoogleGAL_Http_Request ) {
+			if ( ! $this->checkMustRevalidateCachedRequest( $cached, $request ) ) {
+				return $cached;
+			}
+		}
 
-    $request->setResponseHttpCode($respHttpCode);
-    $request->setResponseHeaders($responseHeaders);
-    $request->setResponseBody($responseData);
-    // Store the request in cache (the function checks to see if the request
-    // can actually be cached)
-    $this->setCachedRequest($request);
-    return $request;
-  }
+		if ( array_key_exists( $request->getRequestMethod(), self::$ENTITY_HTTP_METHODS ) ) {
+			$request = $this->processEntityRequest( $request );
+		}
 
-  /**
-   * @visible for testing.
-   * @param GoogleGAL_Http_Request $request
-   * @return GoogleGAL_Http_Request|bool Returns the cached object or
-   * false if the operation was unsuccessful.
-   */
-  public function getCachedRequest(GoogleGAL_Http_Request $request)
-  {
-    if (false === GoogleGAL_Http_CacheParser::isRequestCacheable($request)) {
-      return false;
-    }
+		list($responseData, $responseHeaders, $respHttpCode) = $this->executeRequest( $request );
 
-    return $this->client->getCache()->get($request->getCacheKey());
-  }
+		if ( $respHttpCode == 304 && $cached ) {
+			// If the server responded NOT_MODIFIED, return the cached request.
+			$this->updateCachedRequest( $cached, $responseHeaders );
+			return $cached;
+		}
 
-  /**
-   * @visible for testing
-   * Process an http request that contains an enclosed entity.
-   * @param GoogleGAL_Http_Request $request
-   * @return GoogleGAL_Http_Request Processed request with the enclosed entity.
-   */
-  public function processEntityRequest(GoogleGAL_Http_Request $request)
-  {
-    $postBody = $request->getPostBody();
-    $contentType = $request->getRequestHeader("content-type");
+		if ( ! isset( $responseHeaders['Date'] ) && ! isset( $responseHeaders['date'] ) ) {
+			$responseHeaders['Date'] = date( 'r' );
+		}
 
-    // Set the default content-type as application/x-www-form-urlencoded.
-    if (false == $contentType) {
-      $contentType = self::FORM_URLENCODED;
-      $request->setRequestHeaders(array('content-type' => $contentType));
-    }
+		$request->setResponseHttpCode( $respHttpCode );
+		$request->setResponseHeaders( $responseHeaders );
+		$request->setResponseBody( $responseData );
+		// Store the request in cache (the function checks to see if the request
+		// can actually be cached)
+		$this->setCachedRequest( $request );
+		return $request;
+	}
 
-    // Force the payload to match the content-type asserted in the header.
-    if ($contentType == self::FORM_URLENCODED && is_array($postBody)) {
-      $postBody = http_build_query($postBody, '', '&');
-      $request->setPostBody($postBody);
-    }
+	/**
+	 * @visible for testing.
+	 * @param GoogleGAL_Http_Request $request
+	 * @return GoogleGAL_Http_Request|bool Returns the cached object or
+	 * false if the operation was unsuccessful.
+	 */
+	public function getCachedRequest( GoogleGAL_Http_Request $request ) {
+		if ( false === GoogleGAL_Http_CacheParser::isRequestCacheable( $request ) ) {
+			return false;
+		}
 
-    // Make sure the content-length header is set.
-    if (!$postBody || is_string($postBody)) {
-      $postsLength = strlen($postBody);
-      $request->setRequestHeaders(array('content-length' => $postsLength));
-    }
+		return $this->client->getCache()->get( $request->getCacheKey() );
+	}
 
-    return $request;
-  }
+	/**
+	 * @visible for testing
+	 * Process an http request that contains an enclosed entity.
+	 * @param GoogleGAL_Http_Request $request
+	 * @return GoogleGAL_Http_Request Processed request with the enclosed entity.
+	 */
+	public function processEntityRequest( GoogleGAL_Http_Request $request ) {
+		$postBody    = $request->getPostBody();
+		$contentType = $request->getRequestHeader( 'content-type' );
 
-  /**
-   * Check if an already cached request must be revalidated, and if so update
-   * the request with the correct ETag headers.
-   * @param GoogleGAL_Http_Request $cached A previously cached response.
-   * @param GoogleGAL_Http_Request $request The outbound request.
-   * return bool If the cached object needs to be revalidated, false if it is
-   * still current and can be re-used.
-   */
-  protected function checkMustRevalidateCachedRequest($cached, $request)
-  {
-    if (GoogleGAL_Http_CacheParser::mustRevalidate($cached)) {
-      $addHeaders = array();
-      if ($cached->getResponseHeader('etag')) {
-        // [13.3.4] If an entity tag has been provided by the origin server,
-        // we must use that entity tag in any cache-conditional request.
-        $addHeaders['If-None-Match'] = $cached->getResponseHeader('etag');
-      } elseif ($cached->getResponseHeader('date')) {
-        $addHeaders['If-Modified-Since'] = $cached->getResponseHeader('date');
-      }
+		// Set the default content-type as application/x-www-form-urlencoded.
+		if ( false == $contentType ) {
+			$contentType = self::FORM_URLENCODED;
+			$request->setRequestHeaders( array( 'content-type' => $contentType ) );
+		}
 
-      $request->setRequestHeaders($addHeaders);
-      return true;
-    } else {
-      return false;
-    }
-  }
+		// Force the payload to match the content-type asserted in the header.
+		if ( $contentType == self::FORM_URLENCODED && is_array( $postBody ) ) {
+			$postBody = http_build_query( $postBody, '', '&' );
+			$request->setPostBody( $postBody );
+		}
 
-  /**
-   * Update a cached request, using the headers from the last response.
-   * @param GoogleGAL_HttpRequest $cached A previously cached response.
-   * @param mixed Associative array of response headers from the last request.
-   */
-  protected function updateCachedRequest($cached, $responseHeaders)
-  {
-    if (isset($responseHeaders['connection'])) {
-      $hopByHop = array_merge(
-          self::$HOP_BY_HOP,
-          explode(
-              ',',
-              $responseHeaders['connection']
-          )
-      );
+		// Make sure the content-length header is set.
+		if ( ! $postBody || is_string( $postBody ) ) {
+			$postsLength = strlen( $postBody );
+			$request->setRequestHeaders( array( 'content-length' => $postsLength ) );
+		}
 
-      $endToEnd = array();
-      foreach ($hopByHop as $key) {
-        if (isset($responseHeaders[$key])) {
-          $endToEnd[$key] = $responseHeaders[$key];
-        }
-      }
-      $cached->setResponseHeaders($endToEnd);
-    }
-  }
+		return $request;
+	}
 
-  /**
-   * Used by the IO lib and also the batch processing.
-   *
-   * @param $respData
-   * @param $headerSize
-   * @return array
-   */
-  public function parseHttpResponse($respData, $headerSize)
-  {
-    // check proxy header
-    foreach (self::$CONNECTION_ESTABLISHED_HEADERS as $established_header) {
-      if (stripos($respData, $established_header) !== false) {
-        // existed, remove it
-        $respData = str_ireplace($established_header, '', $respData);
-        // Subtract the proxy header size unless the cURL bug prior to 7.30.0
-        // is present which prevented the proxy header size from being taken into
-        // account.
-        if (!$this->needsQuirk()) {
-          $headerSize -= strlen($established_header);
-        }
-        break;
-      }
-    }
+	/**
+	 * Check if an already cached request must be revalidated, and if so update
+	 * the request with the correct ETag headers.
+	 *
+	 * @param GoogleGAL_Http_Request $cached A previously cached response.
+	 * @param GoogleGAL_Http_Request $request The outbound request.
+	 * return bool If the cached object needs to be revalidated, false if it is
+	 * still current and can be re-used.
+	 */
+	protected function checkMustRevalidateCachedRequest( $cached, $request ) {
+		if ( GoogleGAL_Http_CacheParser::mustRevalidate( $cached ) ) {
+			$addHeaders = array();
+			if ( $cached->getResponseHeader( 'etag' ) ) {
+				// [13.3.4] If an entity tag has been provided by the origin server,
+				// we must use that entity tag in any cache-conditional request.
+				$addHeaders['If-None-Match'] = $cached->getResponseHeader( 'etag' );
+			} elseif ( $cached->getResponseHeader( 'date' ) ) {
+				$addHeaders['If-Modified-Since'] = $cached->getResponseHeader( 'date' );
+			}
 
-    if ($headerSize) {
-      $responseBody = substr($respData, $headerSize);
-      $responseHeaders = substr($respData, 0, $headerSize);
-    } else {
-      $responseSegments = explode("\r\n\r\n", $respData, 2);
-      $responseHeaders = $responseSegments[0];
-      $responseBody = isset($responseSegments[1]) ? $responseSegments[1] :
-                                                    null;
-    }
+			$request->setRequestHeaders( $addHeaders );
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-    $responseHeaders = $this->getHttpResponseHeaders($responseHeaders);
-    return array($responseHeaders, $responseBody);
-  }
+	/**
+	 * Update a cached request, using the headers from the last response.
+	 *
+	 * @param GoogleGAL_HttpRequest                                             $cached A previously cached response.
+	 * @param mixed Associative array of response headers from the last request.
+	 */
+	protected function updateCachedRequest( $cached, $responseHeaders ) {
+		if ( isset( $responseHeaders['connection'] ) ) {
+			$hopByHop = array_merge(
+				self::$HOP_BY_HOP,
+				explode(
+					',',
+					$responseHeaders['connection']
+				)
+			);
 
-  /**
-   * Parse out headers from raw headers
-   * @param rawHeaders array or string
-   * @return array
-   */
-  public function getHttpResponseHeaders($rawHeaders)
-  {
-    if (is_array($rawHeaders)) {
-      return $this->parseArrayHeaders($rawHeaders);
-    } else {
-      return $this->parseStringHeaders($rawHeaders);
-    }
-  }
+			$endToEnd = array();
+			foreach ( $hopByHop as $key ) {
+				if ( isset( $responseHeaders[ $key ] ) ) {
+					$endToEnd[ $key ] = $responseHeaders[ $key ];
+				}
+			}
+			$cached->setResponseHeaders( $endToEnd );
+		}
+	}
 
-  private function parseStringHeaders($rawHeaders)
-  {
-    $headers = array();
-    $responseHeaderLines = explode("\r\n", $rawHeaders);
-    foreach ($responseHeaderLines as $headerLine) {
-      if ($headerLine && strpos($headerLine, ':') !== false) {
-        list($header, $value) = explode(': ', $headerLine, 2);
-        $header = strtolower($header);
-        if (isset($headers[$header])) {
-          $headers[$header] .= "\n" . $value;
-        } else {
-          $headers[$header] = $value;
-        }
-      }
-    }
-    return $headers;
-  }
+	/**
+	 * Used by the IO lib and also the batch processing.
+	 *
+	 * @param $respData
+	 * @param $headerSize
+	 * @return array
+	 */
+	public function parseHttpResponse( $respData, $headerSize ) {
+		// check proxy header
+		foreach ( self::$CONNECTION_ESTABLISHED_HEADERS as $established_header ) {
+			if ( stripos( $respData, $established_header ) !== false ) {
+				// existed, remove it
+				$respData = str_ireplace( $established_header, '', $respData );
+				// Subtract the proxy header size unless the cURL bug prior to 7.30.0
+				// is present which prevented the proxy header size from being taken into
+				// account.
+				if ( ! $this->needsQuirk() ) {
+					$headerSize -= strlen( $established_header );
+				}
+				break;
+			}
+		}
 
-  private function parseArrayHeaders($rawHeaders)
-  {
-    $header_count = count($rawHeaders);
-    $headers = array();
+		if ( $headerSize ) {
+			$responseBody    = substr( $respData, $headerSize );
+			$responseHeaders = substr( $respData, 0, $headerSize );
+		} else {
+			$responseSegments = explode( "\r\n\r\n", $respData, 2 );
+			$responseHeaders  = $responseSegments[0];
+			$responseBody     = isset( $responseSegments[1] ) ? $responseSegments[1] :
+													null;
+		}
 
-    for ($i = 0; $i < $header_count; $i++) {
-      $header = $rawHeaders[$i];
-      // Times will have colons in - so we just want the first match.
-      $header_parts = explode(': ', $header, 2);
-      if (count($header_parts) == 2) {
-        $headers[$header_parts[0]] = $header_parts[1];
-      }
-    }
+		$responseHeaders = $this->getHttpResponseHeaders( $responseHeaders );
+		return array( $responseHeaders, $responseBody );
+	}
 
-    return $headers;
-  }
+	/**
+	 * Parse out headers from raw headers
+	 *
+	 * @param rawHeaders array or string
+	 * @return array
+	 */
+	public function getHttpResponseHeaders( $rawHeaders ) {
+		if ( is_array( $rawHeaders ) ) {
+			return $this->parseArrayHeaders( $rawHeaders );
+		} else {
+			return $this->parseStringHeaders( $rawHeaders );
+		}
+	}
+
+	private function parseStringHeaders( $rawHeaders ) {
+		$headers             = array();
+		$responseHeaderLines = explode( "\r\n", $rawHeaders );
+		foreach ( $responseHeaderLines as $headerLine ) {
+			if ( $headerLine && strpos( $headerLine, ':' ) !== false ) {
+				list($header, $value) = explode( ': ', $headerLine, 2 );
+				$header               = strtolower( $header );
+				if ( isset( $headers[ $header ] ) ) {
+					$headers[ $header ] .= "\n" . $value;
+				} else {
+					$headers[ $header ] = $value;
+				}
+			}
+		}
+		return $headers;
+	}
+
+	private function parseArrayHeaders( $rawHeaders ) {
+		$header_count = count( $rawHeaders );
+		$headers      = array();
+
+		for ( $i = 0; $i < $header_count; $i++ ) {
+			$header = $rawHeaders[ $i ];
+			// Times will have colons in - so we just want the first match.
+			$header_parts = explode( ': ', $header, 2 );
+			if ( count( $header_parts ) == 2 ) {
+				$headers[ $header_parts[0] ] = $header_parts[1];
+			}
+		}
+
+		return $headers;
+	}
 }

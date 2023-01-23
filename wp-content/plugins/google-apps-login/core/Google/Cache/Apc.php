@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
+require_once realpath( dirname( __FILE__ ) . '/../../../autoload.php' );
 
 /**
  * A persistent storage class based on the APC cache, which is not
@@ -25,87 +25,98 @@ require_once realpath(dirname(__FILE__) . '/../../../autoload.php');
  *
  * @author Chris Chabot <chabotc@google.com>
  */
-class GoogleGAL_Cache_Apc extends GoogleGAL_Cache_Abstract
-{
-  /**
-   * @var GoogleGAL_Client the current client
-   */
-  private $client;
+class GoogleGAL_Cache_Apc extends GoogleGAL_Cache_Abstract {
 
-  public function __construct(GoogleGAL_Client $client)
-  {
-    if (! function_exists('apc_add') ) {
-      $error = "Apc functions not available";
+	/**
+	 * @var GoogleGAL_Client the current client
+	 */
+	private $client;
 
-      $client->getLogger()->error($error);
-      throw new GoogleGAL_Cache_Exception($error);
-    }
+	public function __construct( GoogleGAL_Client $client ) {
+		if ( ! function_exists( 'apc_add' ) ) {
+			$error = 'Apc functions not available';
 
-    $this->client = $client;
-  }
+			$client->getLogger()->error( $error );
+			throw new GoogleGAL_Cache_Exception( $error );
+		}
 
-   /**
-   * @inheritDoc
-   */
-  public function get($key, $expiration = false)
-  {
-    $ret = apc_fetch($key);
-    if ($ret === false) {
-      $this->client->getLogger()->debug(
-          'APC cache miss',
-          array('key' => $key)
-      );
-      return false;
-    }
-    if (is_numeric($expiration) && (time() - $ret['time'] > $expiration)) {
-      $this->client->getLogger()->debug(
-          'APC cache miss (expired)',
-          array('key' => $key, 'var' => $ret)
-      );
-      $this->delete($key);
-      return false;
-    }
+		$this->client = $client;
+	}
 
-    $this->client->getLogger()->debug(
-        'APC cache hit',
-        array('key' => $key, 'var' => $ret)
-    );
+	/**
+	 * @inheritDoc
+	 */
+	public function get( $key, $expiration = false ) {
+		$ret = apc_fetch( $key );
+		if ( $ret === false ) {
+			$this->client->getLogger()->debug(
+				'APC cache miss',
+				array( 'key' => $key )
+			);
+			return false;
+		}
+		if ( is_numeric( $expiration ) && ( time() - $ret['time'] > $expiration ) ) {
+			$this->client->getLogger()->debug(
+				'APC cache miss (expired)',
+				array(
+					'key' => $key,
+					'var' => $ret,
+				)
+			);
+			$this->delete( $key );
+			return false;
+		}
 
-    return $ret['data'];
-  }
+		$this->client->getLogger()->debug(
+			'APC cache hit',
+			array(
+				'key' => $key,
+				'var' => $ret,
+			)
+		);
 
-  /**
-   * @inheritDoc
-   */
-  public function set($key, $value)
-  {
-    $var = array('time' => time(), 'data' => $value);
-    $rc = apc_store($key, $var);
+		return $ret['data'];
+	}
 
-    if ($rc == false) {
-      $this->client->getLogger()->error(
-          'APC cache set failed',
-          array('key' => $key, 'var' => $var)
-      );
-      throw new GoogleGAL_Cache_Exception("Couldn't store data");
-    }
+	/**
+	 * @inheritDoc
+	 */
+	public function set( $key, $value ) {
+		$var = array(
+			'time' => time(),
+			'data' => $value,
+		);
+		$rc  = apc_store( $key, $var );
 
-    $this->client->getLogger()->debug(
-        'APC cache set',
-        array('key' => $key, 'var' => $var)
-    );
-  }
+		if ( $rc == false ) {
+			$this->client->getLogger()->error(
+				'APC cache set failed',
+				array(
+					'key' => $key,
+					'var' => $var,
+				)
+			);
+			throw new GoogleGAL_Cache_Exception( "Couldn't store data" );
+		}
 
-  /**
-   * @inheritDoc
-   * @param String $key
-   */
-  public function delete($key)
-  {
-    $this->client->getLogger()->debug(
-        'APC cache delete',
-        array('key' => $key)
-    );
-    apc_delete($key);
-  }
+		$this->client->getLogger()->debug(
+			'APC cache set',
+			array(
+				'key' => $key,
+				'var' => $var,
+			)
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param String $key
+	 */
+	public function delete( $key ) {
+		$this->client->getLogger()->debug(
+			'APC cache delete',
+			array( 'key' => $key )
+		);
+		apc_delete( $key );
+	}
 }
